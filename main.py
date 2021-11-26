@@ -5,33 +5,21 @@ from functions import Functions
 X = np.array([[1, 2, 3], [4, 5, 6]])
 
 Parameters.POP_SIZE         = 4
-Parameters.INIT_MIN_DEPTH   = 2
-Parameters.INIT_MAX_DEPTH   = 4
+Parameters.INIT_MIN_DEPTH   = 1
+Parameters.INIT_MAX_DEPTH   = 3
 Parameters.MAX_DEPTH        = 15
 Parameters.EXPRESSIONS      = [Add, Sub]
 Parameters.TERMINALS        = [Constant, Variable]
 
 
-n1 = Add()
-n2 = Add()
-c1 = Constant()
-c2 = Constant()
-n3 = Add()
-c3 = Constant()
-v1 = Variable()
-v2 = Variable()
+s = Functions.generate_individual('grow')
+t = Functions.generate_individual('grow')
 
-n1.add_child(n2)
-n1.add_child(n3)
-n2.add_child(c1)
-n2.add_child(c2)
-n3.add_child(v1)
-n3.add_child(c3)
+Functions.export_graph(s, 'Source', 'Source')
+print(s.equation())
+Functions.export_graph(t, 'Target_before', 'Target_before')
+print(t.equation())
 
-print(n1.equation())
-Functions.export_graph(n1, 'N_Before', 'Before')
-
-n1.remove_child(n3)
-n1.add_child(v2)
-print(n1.equation())
-Functions.export_graph(n1, 'N_After', 'After')
+n = Functions.share(s, t)
+Functions.export_graph(n, 'Target_after', 'Target_after')
+print(n.equation())
