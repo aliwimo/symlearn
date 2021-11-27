@@ -41,11 +41,11 @@ class Functions():
         if node.inputs == 2:
             child_1 = cls.generate_individual(method, current_depth + 1)
             child_2 = cls.generate_individual(method, current_depth + 1)
-            node.add_child(child_1)
-            node.add_child(child_2)
+            node.add_left_child(child_1)
+            node.add_right_child(child_2)
         elif node.inputs == 1:
             child = cls.generate_individual(method, current_depth + 1)
-            node.add_child(child)
+            node.add_right_child(child)
         return node
 
     
@@ -61,23 +61,17 @@ class Functions():
     def share(cls, source: Node, target: Node):
         source_nodes = cls.get_nodes(source)
         instance_node = deepcopy(choice(source_nodes))
-        print(f'Instance node equation {instance_node.equation()}')
         target_nodes = cls.get_nodes(target)
-        removed_node = deepcopy(choice(target_nodes))
-        print(removed_node)
-        terget_parent = removed_node.parent
-        print(terget_parent)
-        if terget_parent:
-            index = terget_parent.children.index(removed_node)
-            terget_parent.children.pop(index)
-            terget_parent.children.insert(index, instance_node)
-            instance_node.parent = terget_parent
+        removed_node = choice(target_nodes)
+        parent = removed_node.parent
+        if parent:
+            if removed_node.position == 'left':
+                parent.add_left_child(instance_node)
+            elif removed_node.position == 'right':
+                parent.add_right_child(instance_node)
             return target
         else:
             return instance_node
-
-        # terget_parent.children[index] = deepcopy(instance_node)
-        print(target.equation())
 
 
 
@@ -86,9 +80,9 @@ class Functions():
         nodes = []
         nodes.append(root)
         if root.inputs == 2:
-            nodes = nodes + cls.get_nodes(root.children[0])
-            nodes = nodes + cls.get_nodes(root.children[1])
+            nodes = nodes + cls.get_nodes(root.left)
+            nodes = nodes + cls.get_nodes(root.right)
         elif root.inputs == 1:
-            nodes = nodes + cls.get_nodes(root.children[0])
+            nodes = nodes + cls.get_nodes(root.right)
         return nodes
 
