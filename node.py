@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 
 class Node:
     __id = 0
@@ -10,6 +11,7 @@ class Node:
         self.left = None
         self.right = None
         self.position = None
+        # self.id = self.update_id()
         self.id = Node.__id
         Node.__id += 1
     
@@ -39,6 +41,24 @@ class Node:
             eq += self.__repr__()
         return str(eq)
 
+    def depth(self):
+        depth_left = 0
+        depth_right = 0
+        if self.left: depth_left = self.left.depth()
+        if self.right: depth_right = self.right.depth()
+        return max(depth_left, depth_right) + 1
+
+    def copy_subtree(self):
+        subtree = deepcopy(self)
+        subtree.update_id()
+        if subtree.left: subtree.left.update_id()
+        if subtree.right: subtree.right.update_id()
+        return subtree
+
+    def update_id(self):
+        self.id = Node.__id
+        Node.__id += 1
+
     def draw_node(self, graph):
         graph[0].node(str(self.id), str(self))
         if self.left:
@@ -47,5 +67,7 @@ class Node:
         if self.right:
             graph[0].edge(str(self.id), str(self.right.id))
             self.right.draw_node(graph)
+
+
 
     
