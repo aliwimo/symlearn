@@ -53,14 +53,28 @@ class Functions():
     def export_graph(cls, root: Node, file_name, label):
         graph = [Digraph()]
         graph[0].attr(kw = 'graph', label = label)
-        root.draw_node(graph)
+        # root.draw_node(graph)
+        cls.draw_node(graph, root)
         Source(graph[0], filename = file_name + '.gv', format='png').render()
+
+    @classmethod
+    def draw_node(cls, graph, root: Node):
+        # graph[0].node(str(root.id), str(root) + ' [' + str(root.id) + ']')
+        graph[0].node(str(root.id), str(root))
+        if root.left:
+            graph[0].edge(str(root.id), str(root.left.id))
+            cls.draw_node(graph, root.left)
+        if root.right:
+            graph[0].edge(str(root.id), str(root.right.id))
+            cls.draw_node(graph, root.right)
 
     
     @classmethod
     def share(cls, source: Node, target: Node):
         source_nodes = cls.get_nodes(source)
-        instance_node = deepcopy(choice(source_nodes))
+        # instance_node = deepcopy(choice(source_nodes))
+        # instance_node = self.copy_subtree()
+        instance_node = choice(source_nodes).copy_subtree()
         target_nodes = cls.get_nodes(target)
         removed_node = choice(target_nodes)
         parent = removed_node.parent
@@ -85,4 +99,10 @@ class Functions():
         elif root.inputs == 1:
             nodes = nodes + cls.get_nodes(root.right)
         return nodes
+
+    
+    @classmethod
+    def get_nodes_id(cls, root: Node):
+        nodes = cls.get_nodes(root)
+        return [node.id for node in nodes]
 
