@@ -48,6 +48,8 @@ class Firefly:
 
                         temp = deepcopy(self.population[i])
                         temp = Functions.share(self.population[j], self.population[i])
+                        if temp.depth() > Parameters.MAX_DEPTH:
+                            temp = Functions.generate_individual('grow')
                         temp_error = np.sum(np.abs(temp.output(self.X) - self.Y))
                         if temp_error < self.errors[i]:
                             self.population[i] = deepcopy(temp)
