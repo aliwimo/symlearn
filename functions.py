@@ -1,108 +1,115 @@
-from parameters import Parameters
-from expressions import *
-from graphviz import Digraph, Source
-from random import random, choice
-from copy import deepcopy
+from random import randint, random
+import numpy as np
+from parameters import Par
+from tree import Tree
 
-class Functions():
 
+class Func:
+
+    # dataset of targeted function
     @classmethod
-    def generate_population(cls):
-        population = []
-        # generate with full method
-        for _ in range(Parameters.POP_SIZE // 2):
-            individual = cls.generate_individual('full')
-            population.append(individual)
-        # generate with grow method
-        for _ in range((Parameters.POP_SIZE // 2), Parameters.POP_SIZE):
-            individual = cls.generate_individual('grow')
-            population.append(individual)
-        return population
+    def generate_dataset(cls):
+        dataset = []
+        points_x = np.linspace(Par.DOMAIN_X[0], Par.DOMAIN_X[1], Par.POINT_NUM)
+        if Par.VAR_NUM == 1:
 
-
-    @classmethod
-    def generate_individual(cls, method, current_depth=0) -> Node:
-        if method == 'full':
-            if current_depth < Parameters.INIT_MAX_DEPTH - 1:
-                node = choice(Parameters.EXPRESSIONS)()
-            else:
-                node = choice(Parameters.TERMINALS)()
-        elif method == 'grow':
-            if current_depth < Parameters.INIT_MIN_DEPTH:
-                node = choice(Parameters.EXPRESSIONS)()
-            elif Parameters.INIT_MIN_DEPTH <= current_depth < Parameters.INIT_MAX_DEPTH - 1:
-                if random() > 0.5:
-                    node = choice(Parameters.EXPRESSIONS)()
-                else:
-                    node = choice(Parameters.TERMINALS)()
-            else:
-                node = choice(Parameters.TERMINALS)()
-        # create left and right branches
-        if node.inputs == 2:
-            child_1 = cls.generate_individual(method, current_depth + 1)
-            child_2 = cls.generate_individual(method, current_depth + 1)
-            node.add_left_child(child_1)
-            node.add_right_child(child_2)
-        elif node.inputs == 1:
-            child = cls.generate_individual(method, current_depth + 1)
-            node.add_right_child(child)
-        return node
-
-    
-    @classmethod
-    def export_graph(cls, root: Node, file_name, label):
-        graph = [Digraph()]
-        graph[0].attr(kw = 'graph', label = label)
-        # root.draw_node(graph)
-        cls.draw_node(graph, root)
-        Source(graph[0], filename = file_name + '.gv', format='png').render()
-
-    @classmethod
-    def draw_node(cls, graph, root: Node):
-        # graph[0].node(str(root.id), str(root) + ' [' + str(root.id) + ']')
-        graph[0].node(str(root.id), str(root))
-        if root.left:
-            graph[0].edge(str(root.id), str(root.left.id))
-            cls.draw_node(graph, root.left)
-        if root.right:
-            graph[0].edge(str(root.id), str(root.right.id))
-            cls.draw_node(graph, root.right)
-
-    
-    @classmethod
-    def share(cls, source: Node, target: Node):
-        source_nodes = cls.get_nodes(source)
-        # instance_node = deepcopy(choice(source_nodes))
-        # instance_node = self.copy_subtree()
-        instance_node = choice(source_nodes).copy_subtree()
-        target_nodes = cls.get_nodes(target)
-        removed_node = choice(target_nodes)
-        parent = removed_node.parent
-        if parent:
-            if removed_node.position == 'left':
-                parent.add_left_child(instance_node)
-            elif removed_node.position == 'right':
-                parent.add_right_child(instance_node)
-            return target
+            for i in range(Par.POINT_NUM):
+                dataset.append([points_x[i], Par.TARGET_FUNC(points_x[i])])
         else:
-            return instance_node
+            points_y = np.linspace(Par.DOMAIN_Y[0], Par.DOMAIN_Y[1], Par.POINT_NUM)
+            for i in range(Par.POINT_NUM):
+                dataset.append([points_x[i], points_y[i], Par.TARGET_FUNC(points_x[i], points_y[i])])
+        return dataset
 
+    # dataset of generated function
+    @classmethod
+    def computed_dataset(cls, tree):
+        dataset = []
+        points_x = np.linspace(Par.DOMAIN_X[0], Par.DOMAIN_X[1], Par.POINT_NUM)
+        if Par.VAR_NUM == 1:
+            for i in range(Par.POINT_NUM):
+                dataset.append([points_x[i], tree.calc_tree(points_x[i])])
+        else:
+            points_y = np.linspace(Par.DOMAIN_Y[0], Par.DOMAIN_Y[1], Par.POINT_NUM)
+            for i in range(Par.POINT_NUM):
+                dataset.append([points_x[i], points_y[i], tree.calc_tree(points_x[i], points_y[i])])
+        return dataset
 
+    # create initial trees by ramped half & half method
+    @classmethod
+    def init_trees(cls):
+        pop = []
+        for _ in range(Par.POP_SIZE // 2):
+            tree = Tree() 
+            tree.create_tree('full', Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+            if len(pop) > 1:
+                is_different = cls.control_difference(pop, tree)
+                while not is_different:
+                    tree.create_tree('full', Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+                    is_different = cls.control_difference(pop, tree)
+            pop.append(tree)
+        for _ in range((Par.POP_SIZE // 2), Par.POP_SIZE):
+            tree = Tree() 
+            tree.create_tree('grow', Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+            is_different = cls.control_difference(pop, tree)
+            while not is_different:
+                tree.create_tree('full', Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+                is_different = cls.control_difference(pop, tree)
+            pop.append(tree)
+        return pop
 
     @classmethod
-    def get_nodes(cls, root: Node):
-        nodes = []
-        nodes.append(root)
-        if root.inputs == 2:
-            nodes = nodes + cls.get_nodes(root.left)
-            nodes = nodes + cls.get_nodes(root.right)
-        elif root.inputs == 1:
-            nodes = nodes + cls.get_nodes(root.right)
-        return nodes
-
+    def rank_trees(cls, trees, errors, is_reversed=False):
+        sorted_indices = np.argsort(errors)
+        if not is_reversed: sorted_indices = np.flip(sorted_indices)
+        errors.sort(reverse=not is_reversed)
+        temp_trees = trees.copy()
+        for (m, n) in zip(range(Par.POP_SIZE), sorted_indices):
+            trees[m] = temp_trees[n]
+        return trees, errors
     
     @classmethod
-    def get_nodes_id(cls, root: Node):
-        nodes = cls.get_nodes(root)
-        return [node.id for node in nodes]
+    def share(cls, tree1, tree2):
+        sub = tree1.copy_subtree()
+        tree2.paste_subtree(sub)
 
+    @classmethod
+    def check_depth(cls, tree: Tree):
+        if tree.tree_depth() > Par.MAX_DEPTH:
+            method = 'grow' if randint(1, 2) == 1 else 'full'
+            tree.create_tree(method, Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+        return tree
+            
+    @classmethod
+    def control_difference(cls, pop, tree: Tree):
+        different = True
+        for i in range(len(pop)):
+            different = cls.is_different(pop[i], tree)
+            if not different:
+                break
+        return different 
+    
+    @classmethod
+    def is_different(cls, t1: Tree, t2: Tree):
+        different = False
+        if t1 and t2:
+            different = cls.is_different(t1.left, t2.left)
+            if t1.root.value != t2.root.value:
+                different = True
+                return different
+            if not different:
+                different = cls.is_different(t1.right, t2.right)
+        elif (t1 and not t2) or (not t1 and t2):
+            different = True
+        return different
+
+    @classmethod
+    def progress_bar(cls, iteration, gen, error, total, other, length=100):
+        fill = '█'
+        percent = ("{0:." + str(1) + "f}").format(100 * (iteration / float(total)))
+        filled_length = int(length * iteration // total)
+        bar = fill * filled_length + '-' * (length - filled_length)
+        print(f'\r Progress: |{bar}| {percent}% Complete | Counter: {iteration} | Gen: {gen} | Error: {error}', end = '\r')
+        # Print New Line on Complete 
+        if iteration == total: 
+            print()
