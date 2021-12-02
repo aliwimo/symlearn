@@ -2,35 +2,9 @@ from graphviz import Digraph, Source
 from random import random, randint, uniform
 from statistics import mean
 from copy import deepcopy
-import numpy as np
 from node import Node
-from parameters import Par
-
-def Add(X0, X1):
-    return X0 + X1
-
-def Sub(X0, X1):
-    return X0 - X1
-
-def Mul(X0, X1):
-    return X0 * X1
-
-def Div(X0, X1):
-    sign_X1 = np.sign(X1)   # numpy.sign: X>=1 returns 1, X==0 returns 0, X<=1 returns -1 
-    sign_X1[sign_X1 == 0] = 1
-    return X0 / sign_X1
-
-def Sin(X0):
-    return np.sin(X0)
-
-def Cos(X0):
-    return np.cos(X0)
-
-def Rlog(X0):
-    return np.log(np.abs(X0) + 1e-6)
-
-def Exp(X0):
-    return np.exp(X0)
+from parameters import Parameters
+from functions import *
 
 class Tree:
     operator_rate = 0.5
@@ -82,10 +56,10 @@ class Tree:
                     self.root.set_value("constant")
 
         # create left and right branches
-        if self.root.value in Par.OPERATORS:
+        if self.root.value in Parameters.OPERATORS:
             self.left = Tree(parent_id=self.root.id)
             self.left.create_tree(method, min_depth, max_depth, current_depth + 1)
-        if self.root.value in Par.OPERATORS or self.root.value in Par.FUNCTIONS:
+        if self.root.value in Parameters.OPERATORS or self.root.value in Parameters.FUNCTIONS:
             self.right = Tree(parent_id=self.root.id)
             self.right.create_tree(method, min_depth, max_depth, current_depth + 1)
 
@@ -208,17 +182,17 @@ class Tree:
         elif type_before == "function":
             if rand == 1: 
                 self.left = Tree(parent_id=self.root.id)
-                self.left.create_tree(method, Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+                self.left.create_tree(method, Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
             if rand == 3 or rand == 4:
                 self.left = None
                 self.right = None
         else:
             if rand == 1:
                 self.left = Tree(parent_id=self.root.id)
-                self.left.create_tree(method, Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+                self.left.create_tree(method, Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
             if rand == 1 or rand == 2:
                 self.right = Tree(parent_id=self.root.id)
-                self.right.create_tree(method, Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+                self.right.create_tree(method, Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
 
     def change_node(self):
         selected_node = self.random_node()
@@ -266,12 +240,12 @@ class Tree:
         return result
 
     def update_error(self):
-        self.error = np.sum(np.abs(self.calc_tree(Par.X) - Par.Y))
+        self.error = np.sum(np.abs(self.calc_tree(Parameters.X) - Parameters.Y))
 
     def simplify_tree(self):
         if self.left: self.left.simplify_tree()
         if self.right: self.right.simplify_tree()
-        if self.root.value in Par.OPERATORS:
+        if self.root.value in Parameters.OPERATORS:
             result = self.perform_simplification()
             if result != None:
                 self.root.value = str(result)
@@ -297,7 +271,7 @@ class Tree:
     #     if self.left: self.left.prun_tree(max_depth, current_depth=current_depth + 1)
     #     if self.right: self.right.prun_tree(max_depth, current_depth=current_depth + 1)
     #     if current_depth == max_depth:
-    #         self.root.set_value(Par.TERMINALS, "terminal")
+    #         self.root.set_value(Parameters.TERMINALS, "terminal")
     #         self.left = None
     #         self.right = None
 
