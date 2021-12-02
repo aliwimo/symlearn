@@ -1,5 +1,5 @@
 from random import choice
-from parameters import Par
+from parameters import Parameters
 
 class Node:
     __id = 0
@@ -14,14 +14,14 @@ class Node:
 
     def set_value(self, node_type):
         if node_type == "function":
-            self.value = choice(Par.FUNCTIONS)
+            self.value = choice(Parameters.FUNCTIONS)
         elif node_type == "operator":
-            self.value = choice(Par.OPERATORS)
+            self.value = choice(Parameters.OPERATORS)
         elif node_type == "variable":
-            self.value = choice(Par.VARIABLES)
+            self.value = choice(Parameters.VARIABLES)
             self.rank = int(''.join(filter(str.isdigit, self.value)))
         else:
-            self.value = choice(Par.CONSTANTS)        
+            self.value = choice(Parameters.CONSTANTS)        
         self.node_type = node_type
 
     def draw(self, graph):

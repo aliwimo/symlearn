@@ -4,7 +4,6 @@ import numpy as np
 # prepare plot before starting
 def prepare_2Dplots(dataset):
     ds = np.array(dataset)
-    # plt.style.use('seaborn-whitegrid')
     ax = plt.axes()
     ax.grid(alpha=0.3, zorder=0)
     plt.xlabel("X")

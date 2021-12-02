@@ -1,15 +1,29 @@
 import numpy as np
+from sklearn.model_selection import train_test_split
 from tree import Tree
-from parameters import Par
-from firefly import Firefly
+from parameters import Parameters
 from sys import argv
 from random import random
+from fp import FP
 
 
 np.seterr(all='ignore')
 
-X = np.random.uniform(-1, 1, 20).reshape(20, 1)
-Y = (X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0])
+# X = np.random.uniform(-1, 1, 40).reshape(40, 1)
+# X = np.linspace(-1, 9, num=100).reshape(100, 1)
+# y = (X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0])
+
+
+# X = np.random.uniform(0, 1, 20).reshape(20, 1)
+X = np.linspace(0, 10, num=100).reshape(100, 1)
+y = (np.sin(X[:, 0]) + np.sin(X[:, 0] + X[:, 0]**2))
+
+# X = np.random.uniform(0, 1, (20, 2)).reshape(20, 2)
+# Y = (np.sin(X[:, 0]) + np.sin(X[:, 1] ** 2))
+
+# Take a dataset split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, shuffle=False)
+
 
 # X = np.random.uniform(0, 1, 20).reshape(20, 1)
 # Y = (np.sin(X[:, 0]) + np.sin(X[:, 0] + X[:, 0]**2))
@@ -26,13 +40,13 @@ f6 = {'X': [0, 4],      'Y': [0, 1],    'P': 20,   'V': 1}  # f6: 20p [0, 4]    
 f7 = {'X': [0, 1.1],    'Y': [0, 1],    'P': 20,  'V': 2}  # f7: 100p [0, 1]*[0, 1] GP, ABCP: [1.67, 0.62]
 f8 = {'X': [0, 1.1],    'Y': [0, 1],    'P': 20,  'V': 2}  # f8: 100p [0, 1]*[0, 1] GP, ABCP: [1.19, 0.69]
 
-selected            = f1
-Par.POP_SIZE        = 25
-Par.MAX_EVAL        = 25000
-Par.MAX_GEN         = 1000
-Par.INIT_MIN_DEPTH  = 0
-Par.INIT_MAX_DEPTH  = 6
-Par.MAX_DEPTH       = 15
+selected                    = f1
+Parameters.POP_SIZE         = 25
+Parameters.MAX_EVAL         = 25000
+Parameters.MAX_GEN          = 1000
+Parameters.INIT_MIN_DEPTH   = 0
+Parameters.INIT_MAX_DEPTH   = 6
+Parameters.MAX_DEPTH        = 15
 
 def target_function(x, y=None):
     if   selected == f1: return x*x*x*x + x*x*x + x*x + x
@@ -44,31 +58,51 @@ def target_function(x, y=None):
     elif selected == f7: return np.sin(x) + np.sin(y ** 2)
     elif selected == f8: return 2 * np.sin(x) * np.cos(y)
 
-Par.DOMAIN_X        = selected['X']
-Par.DOMAIN_Y        = selected['Y']
-Par.POINT_NUM       = selected['P']
-# Par.VAR_NUM         = selected['V']
-Par.VAR_NUM         = 1
-Par.TARGET_FUNC     = target_function
-Par.X               = X
-Par.Y               = Y
+Parameters.DOMAIN_X        = selected['X']
+Parameters.DOMAIN_Y        = selected['Y']
+Parameters.POINT_NUM       = selected['P']
+# Parameters.VAR_NUM         = selected['V']
+Parameters.VAR_NUM         = 1
+Parameters.TARGET_FUNC     = target_function
+Parameters.X               = X
+Parameters.Y               = y
 Tree.OPER_FUN_RATE  = 0.5
 Tree.TERMINAL_RATE  = 0.5
 
 # create variables list
 VARIABLES = []
-for i in range(Par.VAR_NUM):
+for i in range(Parameters.VAR_NUM):
     var = 'x' + str(i)
     VARIABLES.append(var)
-Par.VARIABLES = VARIABLES
+Parameters.VARIABLES = VARIABLES
 
 if len(argv) > 1:
-    Par.POP_SIZE = int(argv[1])
+    Parameters.POP_SIZE = int(argv[1])
 
-ffp = Firefly(alpha=1, beta=2, gamma=3)
-ffp.run()
+fp = FP(pop_size=25,
+        alpha=0.1,
+        beta=0.5,
+        gamma=1.5,
+        max_evaluations=25000,
+        initial_min_depth=0,
+        initial_max_depth=6,
+        max_depth=15,
+        target_error=0.1,
+        verbose=True
+        )
+
+fp.fit(X_test, y_train)
+fp.export_best()
+
+y_predict = fp.predict(X_test)
+print(y_predict)
+
+score = fp.score(y_test, y_predict)
+print(score)
+
+fp.plot(X_test, X_train, y_train, y_test, y_predict)
 
 # x = Tree()
-# x.create_tree('full', Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+# x.create_tree('full', Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
 
 # x.draw_tree('test', 'label')
