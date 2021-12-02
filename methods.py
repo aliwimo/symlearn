@@ -1,59 +1,30 @@
 from random import randint, random
 import numpy as np
-from parameters import Par
+from parameters import Parameters
 from tree import Tree
 
 
-class Func:
-
-    # dataset of targeted function
-    @classmethod
-    def generate_dataset(cls):
-        dataset = []
-        points_x = np.linspace(Par.DOMAIN_X[0], Par.DOMAIN_X[1], Par.POINT_NUM)
-        if Par.VAR_NUM == 1:
-
-            for i in range(Par.POINT_NUM):
-                dataset.append([points_x[i], Par.TARGET_FUNC(points_x[i])])
-        else:
-            points_y = np.linspace(Par.DOMAIN_Y[0], Par.DOMAIN_Y[1], Par.POINT_NUM)
-            for i in range(Par.POINT_NUM):
-                dataset.append([points_x[i], points_y[i], Par.TARGET_FUNC(points_x[i], points_y[i])])
-        return dataset
-
-    # dataset of generated function
-    @classmethod
-    def computed_dataset(cls, tree):
-        dataset = []
-        points_x = np.linspace(Par.DOMAIN_X[0], Par.DOMAIN_X[1], Par.POINT_NUM)
-        if Par.VAR_NUM == 1:
-            for i in range(Par.POINT_NUM):
-                dataset.append([points_x[i], tree.calc_tree(points_x[i])])
-        else:
-            points_y = np.linspace(Par.DOMAIN_Y[0], Par.DOMAIN_Y[1], Par.POINT_NUM)
-            for i in range(Par.POINT_NUM):
-                dataset.append([points_x[i], points_y[i], tree.calc_tree(points_x[i], points_y[i])])
-        return dataset
+class Methods:
 
     # create initial trees by ramped half & half method
     @classmethod
     def init_trees(cls):
         pop = []
-        for _ in range(Par.POP_SIZE // 2):
+        for _ in range(Parameters.POP_SIZE // 2):
             tree = Tree() 
-            tree.create_tree('full', Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+            tree.create_tree('full', Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
             if len(pop) > 1:
                 is_different = cls.control_difference(pop, tree)
                 while not is_different:
-                    tree.create_tree('full', Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+                    tree.create_tree('full', Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
                     is_different = cls.control_difference(pop, tree)
             pop.append(tree)
-        for _ in range((Par.POP_SIZE // 2), Par.POP_SIZE):
+        for _ in range((Parameters.POP_SIZE // 2), Parameters.POP_SIZE):
             tree = Tree() 
-            tree.create_tree('grow', Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+            tree.create_tree('grow', Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
             is_different = cls.control_difference(pop, tree)
             while not is_different:
-                tree.create_tree('full', Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+                tree.create_tree('full', Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
                 is_different = cls.control_difference(pop, tree)
             pop.append(tree)
         return pop
@@ -64,7 +35,7 @@ class Func:
         if not is_reversed: sorted_indices = np.flip(sorted_indices)
         errors.sort(reverse=not is_reversed)
         temp_trees = trees.copy()
-        for (m, n) in zip(range(Par.POP_SIZE), sorted_indices):
+        for (m, n) in zip(range(len(trees)), sorted_indices):
             trees[m] = temp_trees[n]
         return trees, errors
     
@@ -75,9 +46,9 @@ class Func:
 
     @classmethod
     def check_depth(cls, tree: Tree):
-        if tree.tree_depth() > Par.MAX_DEPTH:
+        if tree.tree_depth() > Parameters.MAX_DEPTH:
             method = 'grow' if randint(1, 2) == 1 else 'full'
-            tree.create_tree(method, Par.INIT_MIN_DEPTH, Par.INIT_MAX_DEPTH)
+            tree.create_tree(method, Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
         return tree
             
     @classmethod
