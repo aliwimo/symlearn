@@ -14,7 +14,3 @@ class Parameters:
     VARIABLES = ['x0']
     CONSTANTS = range(1, 2)
 
-    @classmethod
-    def TARGET_FUNC(cls, *inputs):
-        pass
-

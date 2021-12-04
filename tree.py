@@ -239,8 +239,8 @@ class Tree:
             result = np.array([self.root.value] * X.shape[0])
         return result
 
-    def update_error(self):
-        self.error = np.sum(np.abs(self.calc_tree(Parameters.X) - Parameters.Y))
+    def update_error(self, X, y):
+        self.error = np.sum(np.abs(self.calc_tree(X) - y))
 
     def simplify_tree(self):
         if self.left: self.left.simplify_tree()

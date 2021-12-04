@@ -68,12 +68,12 @@ class FP:
         min_error = 10e6
         min_index = -1
         for index in range(self.pop_size):
-            self.population[index].update_error()
+            self.population[index].update_error(self.X, self.y)
             self.errors[index] = self.population[index].error
             if self.population[index].error <= min_error: 
                 min_index = index
         self.best_individual = deepcopy(self.population[min_index])
-        self.best_individual.update_error()
+        self.best_individual.update_error(self.X, self.y)
 
     def must_terminate(self):
         terminate = False
@@ -108,10 +108,10 @@ class FP:
 
         # for markers and colors look ar the end of this file
         line = [None, None, None, None]
-        line[0], = ax.plot(X_train, y_train, linestyle='-', color='black', linewidth=0.5, zorder=1)    
-        line[1], = ax.plot(X_test, y_test, linestyle='-', color='black', linewidth=0.5, zorder=1)
-        line[2], = ax.plot(X_train, y_model, linestyle=':', color='red', linewidth=2, zorder=2)
-        line[3], = ax.plot(X_test, y_predict, linestyle=':' ,color='green', linewidth=2, zorder=2)
+        line[0], = ax.plot(X_train[:, 0], y_train, linestyle='-', color='black', linewidth=0.5, zorder=1)    
+        line[1], = ax.plot(X_test[:, 0], y_test, linestyle='-', color='black', linewidth=0.5, zorder=1)
+        line[2], = ax.plot(X_train[:, 0], y_model, linestyle=':', color='red', linewidth=2, zorder=2)
+        line[3], = ax.plot(X_test[:, 0], y_predict, linestyle=':' ,color='green', linewidth=2, zorder=2)
         # line[2], = ax.plot(X_train, y_model, marker='v', markersize=2, color='red', linewidth=0, zorder=2)
         # line[3], = ax.plot(X_test, y_predict, marker='o', markersize=2, color='yellow', linewidth=0, zorder=2)
 
@@ -168,7 +168,7 @@ class FP:
                             method = 'grow' if randint(1, 2) == 1 else 'full'
                             temp.create_tree(method, self.initial_min_depth, self.initial_max_depth)
                             is_different = Methods.control_difference(self.population, temp)
-                        temp.update_error()
+                        temp.update_error(self.X, self.y)
                         self.evalualte(i, temp)
 
                     if self.must_terminate(): break
