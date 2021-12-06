@@ -90,7 +90,6 @@ class FP:
     
     def plot(self, X_test, X_train, y_train, y_test, y_predict):
         y_model = self.best_individual.calc_tree(X_train)
-
         
         # preparing plot
         ax = plt.axes()
@@ -102,26 +101,16 @@ class FP:
         plt.xlabel("X")
         plt.ylabel("Y")
 
-        # uncomment these two lines if you want to set a limit for X and Y axis
-        # plt.xlim([120, 1020])
-        # plt.ylim([0, 1])
-
         # for markers and colors look ar the end of this file
         line = [None, None, None, None]
         line[0], = ax.plot(X_train[:, 0], y_train, linestyle='-', color='black', linewidth=0.5, zorder=1)    
         line[1], = ax.plot(X_test[:, 0], y_test, linestyle='-', color='black', linewidth=0.5, zorder=1)
         line[2], = ax.plot(X_train[:, 0], y_model, linestyle=':', color='red', linewidth=2, zorder=2)
         line[3], = ax.plot(X_test[:, 0], y_predict, linestyle=':' ,color='green', linewidth=2, zorder=2)
-        # line[2], = ax.plot(X_train, y_model, marker='v', markersize=2, color='red', linewidth=0, zorder=2)
-        # line[3], = ax.plot(X_test, y_predict, marker='o', markersize=2, color='yellow', linewidth=0, zorder=2)
-
-        # show the legend of the graphs 
-        # ax.legend()
 
         # show graphes
         plt.draw()
         plt.show()
-
 
 
     def export_best(self):
