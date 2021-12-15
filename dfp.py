@@ -1,7 +1,6 @@
 import numpy as np
 from copy import deepcopy
 from random import randint, random
-import matplotlib.pyplot as plt
 from tree import Tree
 from parameters import Parameters
 from methods import Methods
@@ -26,7 +25,7 @@ class DFP:
         self.alpha = alpha
         self.beta = beta
         self.gamma = gamma
-        self.max_evaluations = 10000
+        self.max_evaluations = max_evaluations
         self.max_generations = -1
         self.initial_min_depth = 0
         self.initial_max_depth = initial_max_depth
@@ -61,7 +60,7 @@ class DFP:
         return abs(100 - np.sum(np.abs(y_test - y_predict))) / 100
 
     def generate_population(self):
-        self.population = Methods.init_trees()
+        self.population = Methods.init_trees(self.pop_size, self.initial_min_depth, self.initial_max_depth)
 
     def get_initial_statistics(self):
         self.errors = [0] * self.pop_size
@@ -88,30 +87,9 @@ class DFP:
     def rank(self, is_reversed=False):
         self.population, self.errors = Methods.rank_trees(self.population, self.errors, is_reversed)
     
-    def plot(self, X_test, X_train, y_train, y_test, y_predict):
+    def plot(self, X_train, X_test, y_train, y_test, y_predict):
         y_model = self.best_individual.calc_tree(X_train)
-
-        # preparing plot
-        ax = plt.axes()
-
-        # showing grid 
-        ax.grid(linestyle=':', linewidth=1, alpha=1, zorder=0)
-
-        # set the Label of X and Y axis
-        plt.xlabel("X")
-        plt.ylabel("Y")
-
-        # for markers and colors look ar the end of this file
-        line = [None, None, None, None]
-        line[0], = ax.plot(X_train[:, 0], y_train, linestyle='-', color='black', linewidth=0.5, zorder=1)    
-        line[1], = ax.plot(X_test[:, 0], y_test, linestyle='-', color='black', linewidth=0.5, zorder=1)
-        line[2], = ax.plot(X_train[:, 0], y_model, linestyle=':', color='red', linewidth=2, zorder=2)
-        line[3], = ax.plot(X_test[:, 0], y_predict, linestyle=':' ,color='green', linewidth=2, zorder=2)
-
-        # show graphes
-        plt.draw()
-        plt.show()
-
+        Methods.plot(X_train, X_test, y_train, y_test, y_model, y_predict)
 
     def export_best(self):
         if self.best_individual:
@@ -162,12 +140,7 @@ class DFP:
                         self.current_evaluation += 1
                         
                         temp = self.attract(i, j)
-                        temp = Methods.check_depth(temp)
-                        is_different = Methods.control_difference(self.population, temp)
-                        while not is_different:
-                            method = 'grow' if randint(1, 2) == 1 else 'full'
-                            temp.create_tree(method, self.initial_min_depth, self.initial_max_depth)
-                            is_different = Methods.control_difference(self.population, temp)
+                        temp = Methods.check_depth(temp, self.initial_min_depth, self.initial_max_depth, self.max_depth)
                         temp.update_error(self.X, self.y)
                         self.evalualte(i, temp)
 
