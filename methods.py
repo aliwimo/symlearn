@@ -1,6 +1,6 @@
 from random import randint, random
+import matplotlib.pyplot as plt
 import numpy as np
-from parameters import Parameters
 from tree import Tree
 
 
@@ -8,24 +8,15 @@ class Methods:
 
     # create initial trees by ramped half & half method
     @classmethod
-    def init_trees(cls):
+    def init_trees(cls, pop_size, initial_min_depth, initial_max_depth):
         pop = []
-        for _ in range(Parameters.POP_SIZE // 2):
+        for _ in range(pop_size // 2):
             tree = Tree() 
-            tree.create_tree('full', Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
-            if len(pop) > 1:
-                is_different = cls.control_difference(pop, tree)
-                while not is_different:
-                    tree.create_tree('full', Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
-                    is_different = cls.control_difference(pop, tree)
+            tree.create_tree('full', initial_min_depth, initial_max_depth)
             pop.append(tree)
-        for _ in range((Parameters.POP_SIZE // 2), Parameters.POP_SIZE):
+        for _ in range((pop_size // 2), pop_size):
             tree = Tree() 
-            tree.create_tree('grow', Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
-            is_different = cls.control_difference(pop, tree)
-            while not is_different:
-                tree.create_tree('full', Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
-                is_different = cls.control_difference(pop, tree)
+            tree.create_tree('grow', initial_min_depth, initial_max_depth)
             pop.append(tree)
         return pop
 
@@ -45,42 +36,29 @@ class Methods:
         tree2.paste_subtree(sub)
 
     @classmethod
-    def check_depth(cls, tree: Tree):
-        if tree.tree_depth() > Parameters.MAX_DEPTH:
+    def check_depth(cls, tree: Tree, initial_min_depth, initial_max_depth, max_depth):
+        if tree.tree_depth() > max_depth:
             method = 'grow' if randint(1, 2) == 1 else 'full'
-            tree.create_tree(method, Parameters.INIT_MIN_DEPTH, Parameters.INIT_MAX_DEPTH)
+            tree.create_tree(method, initial_min_depth, initial_max_depth)
         return tree
-            
-    @classmethod
-    def control_difference(cls, pop, tree: Tree):
-        different = True
-        for i in range(len(pop)):
-            different = cls.is_different(pop[i], tree)
-            if not different:
-                break
-        return different 
-    
-    @classmethod
-    def is_different(cls, t1: Tree, t2: Tree):
-        different = False
-        if t1 and t2:
-            different = cls.is_different(t1.left, t2.left)
-            if t1.root.value != t2.root.value:
-                different = True
-                return different
-            if not different:
-                different = cls.is_different(t1.right, t2.right)
-        elif (t1 and not t2) or (not t1 and t2):
-            different = True
-        return different
 
     @classmethod
-    def progress_bar(cls, iteration, gen, error, total, other, length=100):
-        fill = '█'
-        percent = ("{0:." + str(1) + "f}").format(100 * (iteration / float(total)))
-        filled_length = int(length * iteration // total)
-        bar = fill * filled_length + '-' * (length - filled_length)
-        print(f'\r Progress: |{bar}| {percent}% Complete | Counter: {iteration} | Gen: {gen} | Error: {error}', end = '\r')
-        # Print New Line on Complete 
-        if iteration == total: 
-            print()
+    def plot(self, X_train, X_test, y_train, y_test, y_model, y_predict):
+        # preparing plot
+        ax = plt.axes()
+        # showing grid 
+        ax.grid(linestyle=':', linewidth=1, alpha=1, zorder=0)
+        # set the Label of X and Y axis
+        plt.xlabel("X")
+        plt.ylabel("Y")
+        # for markers and colors look ar the end of this file
+        line = [None, None, None, None]
+        line[0], = ax.plot(X_train[:, 0], y_train, linestyle='-', color='black', linewidth=0.5, zorder=1)    
+        line[1], = ax.plot(X_test[:, 0], y_test, linestyle='-', color='black', linewidth=0.5, zorder=1)
+        line[2], = ax.plot(X_train[:, 0], y_model, linestyle=':', color='red', linewidth=2, zorder=2)
+        line[3], = ax.plot(X_test[:, 0], y_predict, linestyle=':' ,color='green', linewidth=2, zorder=2)
+        # show graphes
+        plt.draw()
+        plt.show()
+
+    
