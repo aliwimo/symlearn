@@ -224,6 +224,8 @@ class Tree:
                 result = Mul(self.left.calc_tree(X), self.right.calc_tree(X))
             elif self.root.value == '/':
                 result = Div(self.left.calc_tree(X), self.right.calc_tree(X))
+            elif self.root.value == 'pow':
+                result = Pow(self.left.calc_tree(X), self.right.calc_tree(X))
         elif self.root.node_type == "function":
             if self.root.value == 'sin':
                 result = Sin(self.right.calc_tree(X))
