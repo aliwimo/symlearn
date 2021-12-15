@@ -87,8 +87,6 @@ Parameters.CONSTANTS = range(1, 2)
 # y_predict = fp.predict(X_test)
 # fp.plot(X_train, X_test, y_train, y_test, y_predict)
 
-print('--------------------------------')
-
 dfp = DFP(pop_size=25,
         alpha=0.1,
         beta=0.5,
