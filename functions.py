@@ -27,3 +27,6 @@ def Rlog(X0):
 
 def Exp(X0):
     return np.exp(X0)
+
+def Pow(X0, X1):
+    return np.power(X0, np.abs(X1))
