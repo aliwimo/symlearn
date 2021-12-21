@@ -242,7 +242,7 @@ class Tree:
         return result
 
     def update_error(self, X, y):
-        self.error = np.sum(np.abs(self.calc_tree(X) - y))
+        self.error = Parameters.ERROR_FUNCTION(self.calc_tree(X), y)
 
     def simplify_tree(self):
         if self.left: self.left.simplify_tree()
