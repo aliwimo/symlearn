@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, uniform
 from parameters import Parameters
 
 class Node:
@@ -21,7 +21,10 @@ class Node:
             self.value = choice(Parameters.VARIABLES)
             self.rank = int(''.join(filter(str.isdigit, self.value)))
         else:
-            self.value = choice(Parameters.CONSTANTS)        
+            if Parameters.CONSTANTS_TYPE == 'range':
+                self.value = uniform(Parameters.CONSTANTS[0], Parameters.CONSTANTS[1])  
+            else:
+                self.value = choice(Parameters.CONSTANTS)      
         self.node_type = node_type
 
     def draw(self, graph):
