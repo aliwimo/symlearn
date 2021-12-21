@@ -3,26 +3,27 @@ from sklearn.model_selection import train_test_split
 from tree import Tree
 from parameters import Parameters
 from methods import Methods
+from errors import *
 from sys import argv
 from random import random
+# from box import BOX
 from fp import FP
 from dfp import DFP
-# from box import FP
 
 
 np.seterr(all='ignore')
 
 
 # box series
-# box_dataset = np.loadtxt('box.dat')
-# X = box_dataset[:, [0, 1]]
-# y = box_dataset[:, 2]
-# t = range(290)
+box_dataset = np.loadtxt('box.dat')
+X = box_dataset[:, [0, 1]]
+y = box_dataset[:, 2]
+t = np.arange(0, 290)
+
 
 # f1
-X = np.random.uniform(-1, 1, 40).reshape(40, 1)
-X = np.linspace(-1, 1, num=20).reshape(20, 1)
-y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
+# X = np.linspace(-1, 1, num=20).reshape(20, 1)
+# y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
 
 # f2
 # X = np.linspace(-1, 9, num=100).reshape(100, 1)
@@ -49,15 +50,15 @@ y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
 # y = np.sin(X[:, 0]) + np.sin(X[:, 1] ** 2)
 
 # Take a dataset split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, shuffle=False)
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, shuffle=False)
 # X_train, X_test, t_train, t_test = train_test_split(X, t, test_size=0.3, shuffle=False)
 
-# X_train = X[0:200, :]
-# X_test = X[200:, :]
-# y_train = y[0:200]
-# y_test = y[200:]
-# t_train = t[:200]
-# t_test = t[200:]
+X_train = X[0:200, :]
+X_test = X[200:, :]
+y_train = y[0:200]
+y_test = y[200:]
+t_train = t[:200]
+t_test = t[200:]
 
 
 # create variables list
@@ -68,39 +69,49 @@ for i in range(X.shape[1]):
 Parameters.VARIABLES = VARIABLES
 Parameters.OPERATORS = ['+', '-', '*', '/']
 Parameters.FUNCTIONS = ['sin', 'cos', 'exp', 'rlog']
-Parameters.CONSTANTS = range(1, 2)
+Parameters.CONSTANTS = [-1, 1]
+Parameters.CONSTANTS_TYPE = 'range'
+Parameters.ERROR_FUNCTION = MSE
 
-# fp = FP(pop_size=25,
-#         alpha=0.1,
-#         beta=0.5,
-#         gamma=1.5,
-#         max_evaluations=25000,
-#         initial_min_depth=0,
-#         initial_max_depth=6,
-#         max_depth=15,
-#         target_error=0.1,
-#         verbose=True
-#         )
 
-# fp.fit(X_train, y_train)
-# fp.export_best()
-# y_predict = fp.predict(X_test)
-# fp.plot(X_train, X_test, y_train, y_test, y_predict)
+bx = DFP(
+    pop_size=100,
+    alpha=0.1,
+    beta=0.5,
+    gamma=1,
+    max_evaluations=25000,
+    initial_min_depth=0,
+    initial_max_depth=6,
+    max_depth=6,
+    target_error=1e-6,
+    verbose=True
+)
 
-dfp = DFP(pop_size=25,
-        alpha=0.1,
-        beta=0.5,
-        gamma=1.5,
-        max_evaluations=25000,
-        initial_min_depth=0,
-        initial_max_depth=6,
-        max_depth=15,
-        target_error=0.1,
-        verbose=True
-        )
+y_fitted = bx.fit(X_train, y_train)
+y_pred = bx.predict(X_test)
+bx.export_best()
 
-dfp.fit(X_train, y_train)
-dfp.export_best()
-y_predict = dfp.predict(X_test)
-dfp.plot(X_train, X_test, y_train, y_test, y_predict)
+Methods.plot(x_axis_train=t_train,
+            y_axis_train=y_train,
+            y_axis_fitted=y_fitted,
+            x_axis_test=t_test,
+            y_axis_test=y_test,
+            y_axis_pred=y_pred,
+            test_set=True)
 
+# Methods.plot(x_axis_train=X_train,
+#             y_axis_train=y_train,
+#             y_axis_fitted=y_fitted,
+#             x_axis_test=X_test,
+#             y_axis_test=y_test,
+#             y_axis_pred=y_pred)
+
+# Methods.plot(x_axis_train=X_train,
+#             y_axis_train=y_train,
+#             y_axis_fitted=y_fitted)
+
+# bx.plot(X_train, X_test, y_train, y_test, y_predict)
+
+# from sklearn.metrics import confusion_matrix
+# score = confusion_matrix(y_test, y_predict)
+# print(score)
