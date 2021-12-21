@@ -43,7 +43,14 @@ class Methods:
         return tree
 
     @classmethod
-    def plot(self, X_train, X_test, y_train, y_test, y_model, y_predict):
+    def plot(cls, x_axis_train, y_axis_train, y_axis_fitted, x_axis_test=None, y_axis_test=None, y_axis_pred=None, test_set=False):
+
+        # adding additional point to remove the spae between train and test sets
+        if test_set:
+            x_axis_train = np.append(x_axis_train, x_axis_test[0])
+            y_axis_train = np.append(y_axis_train, y_axis_test[0])
+            y_axis_fitted = np.append(y_axis_fitted, y_axis_pred[0])
+
         # preparing plot
         ax = plt.axes()
         # showing grid 
@@ -53,10 +60,12 @@ class Methods:
         plt.ylabel("Y")
         # for markers and colors look ar the end of this file
         line = [None, None, None, None]
-        line[0], = ax.plot(X_train[:, 0], y_train, linestyle='-', color='black', linewidth=0.5, zorder=1)    
-        line[1], = ax.plot(X_test[:, 0], y_test, linestyle='-', color='black', linewidth=0.5, zorder=1)
-        line[2], = ax.plot(X_train[:, 0], y_model, linestyle=':', color='red', linewidth=2, zorder=2)
-        line[3], = ax.plot(X_test[:, 0], y_predict, linestyle=':' ,color='green', linewidth=2, zorder=2)
+        line[0], = ax.plot(x_axis_train, y_axis_train, linestyle='-', color='black', linewidth=0.5, zorder=1)    
+        line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='black', linewidth=0.7, zorder=2)
+        if test_set:
+            line[2], = ax.plot(x_axis_test, y_axis_test, linestyle='-', color='black', linewidth=0.5, zorder=1)
+            line[3], = ax.plot(x_axis_test, y_axis_pred, linestyle=':' ,color='black', linewidth=0.7, zorder=2)
+            plt.axvline(x=x_axis_test[0], linestyle='-', color='black', linewidth='1')
         # show graphes
         plt.draw()
         plt.show()
