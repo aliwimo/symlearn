@@ -26,12 +26,12 @@ class FP:
         self.beta = beta
         self.gamma = gamma
         self.max_evaluations = max_evaluations
-        self.max_generations = -1
-        self.initial_min_depth = 0
+        self.max_generations = max_generations
+        self.initial_min_depth = initial_min_depth
         self.initial_max_depth = initial_max_depth
         self.max_depth = max_depth
         self.target_error = target_error
-        self.verbose = True
+        self.verbose = verbose
         
         self.current_evaluation = 0
         self.current_generation = 0
@@ -40,10 +40,6 @@ class FP:
         self.population = None
         self.errors = None
 
-        
-    # def simplify_trees(self):
-    #     for index in range(len(self.population)):
-    #         self.population[index].simplify_tree()
 
     def fit(self, X, y):
         self.X = X
@@ -52,6 +48,7 @@ class FP:
         self.get_initial_statistics()
         self.run()
         print(self.best_individual.error)
+        return self.best_individual.calc_tree(X)
 
     def predict(self, X):
         return self.best_individual.calc_tree(X)
@@ -87,11 +84,7 @@ class FP:
     def rank(self, is_reversed=False):
         self.population, self.errors = Methods.rank_trees(self.population, self.errors, is_reversed)
     
-    def plot(self, X_train, X_test, y_train, y_test, y_predict):
-        y_model = self.best_individual.calc_tree(X_train)
-        Methods.plot(X_train, X_test, y_train, y_test, y_model, y_predict)
-
-
+    
     def export_best(self):
         if self.best_individual:
             label = "Best error: "
@@ -137,4 +130,7 @@ class FP:
                     if self.must_terminate(): break
                 if self.must_terminate(): break
             if self.must_terminate(): break
-            self.current_generation += 1
+            
+            # increase generation counter
+            if not self.max_generations == -1: self.current_generation += 1
+
