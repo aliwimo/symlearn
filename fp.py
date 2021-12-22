@@ -1,9 +1,11 @@
 import numpy as np
 from copy import deepcopy
 from random import randint, random
-from tree import Tree
+# from tree import Tree
+from node_n import Node
 from parameters import Parameters
-from methods import Methods
+from methods_n import Methods
+from functions_n import *
 
 class FP:
 
@@ -17,6 +19,9 @@ class FP:
                 initial_min_depth=0,
                 initial_max_depth=6,
                 max_depth=15,
+                error_function=None,
+                expressions=[Add, Sub, Mul],
+                terminals=[Variable, Constant],
                 target_error=0.0, 
                 verbose=True
                 ):
@@ -30,6 +35,9 @@ class FP:
         self.initial_min_depth = initial_min_depth
         self.initial_max_depth = initial_max_depth
         self.max_depth = max_depth
+        self.error_function = error_function
+        self.expressions = expressions
+        self.terminals = terminals
         self.target_error = target_error
         self.verbose = verbose
         
@@ -38,7 +46,7 @@ class FP:
 
         self.best_individual = None
         self.population = None
-        self.errors = None
+        self.fitnesses = None
 
 
     def fit(self, X, y):
@@ -47,65 +55,79 @@ class FP:
         self.generate_population()
         self.get_initial_statistics()
         self.run()
-        print(self.best_individual.error)
-        return self.best_individual.calc_tree(X)
+        print(self.best_individual.fitness)
+        Methods.export_graph(self.best_individual, 'Best', 'Best')
+        print(self.best_individual.equation())
+        # return self.best_individual.calc_tree(X)
+        return self.best_individual.output(X)
 
-    def predict(self, X):
-        return self.best_individual.calc_tree(X)
+    # def predict(self, X):
+    #     return self.best_individual.calc_tree(X)
 
-    def score(self, y_test, y_predict):
-        return abs(100 - np.sum(np.abs(y_test - y_predict))) / 100
+    # def score(self, y_test, y_predict):
+    #     return abs(100 - np.sum(np.abs(y_test - y_predict))) / 100
 
     def generate_population(self):
-        self.population = Methods.init_trees(self.pop_size, self.initial_min_depth, self.initial_max_depth)
+        self.population = Methods.generate_population(
+                            pop_size=self.pop_size,
+                            initial_min_depth=self.initial_min_depth,
+                            initial_max_depth=self.initial_max_depth,
+                            expressions=self.expressions,
+                            terminals=self.terminals)
 
     def get_initial_statistics(self):
-        self.errors = [0] * self.pop_size
+        self.fitnesses = [0] * self.pop_size
         min_error = 10e6
         min_index = -1
         for index in range(self.pop_size):
-            self.population[index].update_error(self.X, self.y)
-            self.errors[index] = self.population[index].error
-            if self.population[index].error <= min_error: 
+            self.population[index].update_fitness(self.error_function, self.X, self.y)
+            self.fitnesses[index] = self.population[index].fitness
+            if self.population[index].fitness <= min_error: 
                 min_index = index
         self.best_individual = deepcopy(self.population[min_index])
-        self.best_individual.update_error(self.X, self.y)
+        self.best_individual.update_fitness(self.error_function, self.X, self.y)
+        self.best_individual.update_fitness(self.error_function, self.X, self.y)
 
     def must_terminate(self):
         terminate = False
         if self.max_evaluations > -1 and self.current_evaluation > self.max_evaluations:
             terminate = True
+            # print(f'Evaluations {self.current_evaluation}')
+            # print('Terminated with max evaluations')
         elif self.max_generations >-1 and self.current_generation > self.max_generations:
             terminate = True
-        elif self.best_individual.error < self.target_error:
+            # print('Terminated with max generations')
+        elif self.best_individual.fitness < self.target_error:
             terminate = True
+            # print('Terminated with target error')
         return terminate
 
     def rank(self, is_reversed=False):
-        self.population, self.errors = Methods.rank_trees(self.population, self.errors, is_reversed)
+        self.population, self.fitnesses = Methods.rank_trees(self.population, self.fitnesses, is_reversed)
     
     
-    def export_best(self):
-        if self.best_individual:
-            label = "Best error: "
-            label += str(round(self.best_individual.error, 3))
-            self.best_individual.draw_tree("best_model", label)
-            print(self.best_individual.tree_equation())
+    # def export_best(self):
+    #     if self.best_individual:
+    #         label = "Best error: "
+    #         label += str(round(self.best_individual.error, 3))
+    #         self.best_individual.draw_tree("best_model", label)
+    #         print(self.best_individual.tree_equation())
 
-    def attract(self, i, j):
-        distance = np.abs(self.population[i].error - self.population[j].error)
-        temp = deepcopy(self.population[i])
-        Methods.share(self.population[j], temp)
-        return temp
+    # def attract(self, i, j):
+    #     distance = np.abs(self.population[i].error - self.population[j].error)
+    #     temp = deepcopy(self.population[i])
+    #     Methods.share(self.population[j], temp)
+    #     return temp
 
     def evalualte(self, current, temp):
-        if temp.error < self.population[current].error:
+        temp.update_fitness(self.error_function, self.X, self.y)
+        if temp.fitness < self.population[current].fitness:
             self.population[current] = deepcopy(temp)
-            self.errors[current] = self.population[current].error
-            if self.population[current].error < self.best_individual.error:
+            self.fitnesses[current] = self.population[current].fitness
+            if self.population[current].fitness < self.best_individual.fitness:
                 self.best_individual = deepcopy(self.population[current])
                 if self.verbose:
-                    print(f'Evaluations: {self.current_evaluation}\t| Gen: {self.current_generation}\t| Error: {self.best_individual.error}')
+                    print(f'Evaluations: {self.current_evaluation}\t| Gen: {self.current_generation}\t| Fitness: {self.best_individual.fitness}')
     
     # standard firefly programming method (FP)
     def run(self):
@@ -118,14 +140,22 @@ class FP:
                 for j in range(self.pop_size):
                     if self.must_terminate(): break
 
-                    if self.population[i].error >= self.population[j].error:
+                    if self.population[i].fitness >= self.population[j].fitness:
 
                         self.current_evaluation += 1
-                        
-                        temp = self.attract(i, j)
-                        temp = Methods.check_depth(temp, self.initial_min_depth, self.initial_max_depth, self.max_depth)
-                        temp.update_error(self.X, self.y)
+                        # print(f'Evaluations: {self.current_evaluation}\t| Gen: {self.current_generation}\t| Fitness: {self.best_individual.fitness}')
+
+                        temp = Methods.share(self.population[j], self.population[i])
+
+                        if temp.depth() > self.max_depth:
+                            temp = Methods.generate_individual('grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
+
                         self.evalualte(i, temp)
+
+                        # temp = self.attract(i, j)
+                        # temp = Methods.check_depth(temp, self.initial_min_depth, self.initial_max_depth, self.max_depth)
+                        # temp.update_error(self.X, self.y)
+                        # self.evalualte(i, temp)
 
                     if self.must_terminate(): break
                 if self.must_terminate(): break

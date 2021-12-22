@@ -2,6 +2,7 @@ from random import randint, random
 import matplotlib.pyplot as plt
 import numpy as np
 from tree import Tree
+from node_n import Node
 
 
 class Methods:
@@ -70,4 +71,39 @@ class Methods:
         plt.draw()
         plt.show()
 
+
+    
+    # export tree's graph
+    # @classmethod
+    # def export_tree(cls, root, file_name, label):
+    #     graph = [Digraph()]
+    #     graph[0].attr(kw = 'graph', label = label)
+    #     nodes = root.get_sub_nodes()
+    #     for n in nodes:
+    #         cls.draw_node(n, graph)
+    #     Source(graph[0], filename = file_name + '.gv', format='png').render()
+
+    @classmethod
+    def export_graph(cls, root: Node, file_name, label):
+        graph = [Digraph()]
+        graph[0].attr(kw = 'graph', label = label)
+        cls.draw_node(graph, root)
+        Source(graph[0], filename = file_name + '.gv', format='png').render()
+
+    @classmethod
+    def draw_node(cls, graph, root: Node):
+        graph[0].node(str(root.id), str(root))
+        if root.left:
+            graph[0].edge(str(root.id), str(root.left.id))
+            cls.draw_node(graph, root.left)
+        if root.right:
+            graph[0].edge(str(root.id), str(root.right.id))
+            cls.draw_node(graph, root.right)
+
+
+    # @classmethod
+    # def draw_node(cls, node, graph):
+    #     if node.parent is not None:
+    #         graph[0].edge(str(node.parent.id), str(node.id))
+    #     graph[0].node(str(node.id), node)
     
