@@ -61,8 +61,8 @@ class FP:
         # return self.best_individual.calc_tree(X)
         return self.best_individual.output(X)
 
-    # def predict(self, X):
-    #     return self.best_individual.calc_tree(X)
+    def predict(self, X):
+        return self.best_individual.output(X)
 
     # def score(self, y_test, y_predict):
     #     return abs(100 - np.sum(np.abs(y_test - y_predict))) / 100
@@ -144,9 +144,15 @@ class FP:
 
                         self.current_evaluation += 1
                         # print(f'Evaluations: {self.current_evaluation}\t| Gen: {self.current_generation}\t| Fitness: {self.best_individual.fitness}')
+                        
 
-                        temp = Methods.share(self.population[j], self.population[i])
-
+                        # temp = Methods.share(self.population[j], deepcopy(self.population[i]))
+                        if random() > 0.5:
+                            temp = Methods.share(self.population[j], deepcopy(self.population[i]))
+                        else:
+                            temp = Methods.change_node(deepcopy(self.population[i]), self.expressions + self.terminals)
+                        temp = Methods.change_node(deepcopy(self.population[i]), self.expressions + self.terminals)
+                        
                         if temp.depth() > self.max_depth:
                             temp = Methods.generate_individual('grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
 

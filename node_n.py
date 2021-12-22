@@ -50,7 +50,7 @@ class Node:
         if self.right: nodes = nodes + self.right.sub_nodes()
         return nodes
 
-    def subtree(self):
+    def sub_tree(self):
         subtree = deepcopy(self)
         subtree.update_id()
         if self.left: self.left.update_id()

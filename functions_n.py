@@ -98,10 +98,10 @@ class Rlog(Node):
 
     def output(self, X):
         X0 = self.right.output(X)
-        # sign_X0 = np.sign(X0)   # numpy.sign: X>=1 returns 1, X==0 returns 0, X<=1 returns -1 
-        # X0[sign_X0 == 0] = 1e-6
-        return np.log(np.abs(X0) + 1e-6)
-        # return np.log(np.abs(X0))
+        sign_X0 = np.sign(X0)   # numpy.sign: X>=1 returns 1, X==0 returns 0, X<=1 returns -1 
+        X0[sign_X0 == 0] = 1e-6
+        # return np.log(np.abs(X0) + 1e-6)
+        return np.log(np.abs(X0))
 
 class Pow(Node):
     def __init__(self):
@@ -116,6 +116,7 @@ class Pow(Node):
         X0 = self.left.output(X)
         X1 = self.right.output(X)
         return np.power(X0, np.abs(X1))
+        # return np.power(X0, X1)
 
 class Exp(Node):
     def __init__(self):

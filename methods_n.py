@@ -1,7 +1,9 @@
+import numpy as np
+import matplotlib.pyplot as plt
 from random import random, choice
 from graphviz import Digraph, Source
 from node_n import Node
-import numpy as np
+from copy import deepcopy
 
 class Methods:
 
@@ -55,7 +57,7 @@ class Methods:
     @classmethod
     def share(cls, source: Node, target: Node):
         source_nodes = source.sub_nodes()
-        instance_node = choice(source_nodes).subtree()
+        instance_node = choice(source_nodes).sub_tree()
         target_nodes = target.sub_nodes()
         removed_node = choice(target_nodes)
         parent = removed_node.parent
@@ -70,6 +72,31 @@ class Methods:
         else:
             return instance_node
 
+    @classmethod
+    def change_node(cls, source: Node, nodes_pool):
+        source_nodes = source.sub_nodes()
+        selected_node = choice(source_nodes)
+        same_inputs = False
+        while not same_inputs:
+            new_node = choice(nodes_pool)()
+            if new_node.inputs == selected_node.inputs:
+                same_inputs = True
+        parent = selected_node.parent
+        if parent:
+            if selected_node.parent.left == selected_node:
+                parent.remove_left_node(selected_node)
+                parent.add_left_node(new_node)
+            elif selected_node.parent.right == selected_node:
+                parent.remove_right_node(selected_node)
+                parent.add_right_node(new_node)
+
+        if selected_node.inputs == 2:
+            new_node.add_left_node(deepcopy(selected_node.left))
+            new_node.add_right_node(deepcopy(selected_node.right))
+        elif selected_node.inputs == 1:
+            new_node.add_right_node(deepcopy(selected_node.right))
+        return source
+    
     @classmethod
     def rank_trees(cls, trees, fitnesses, is_reversed=False):
         sorted_indices = np.argsort(fitnesses)
@@ -107,3 +134,31 @@ class Methods:
         if root.right:
             graph[0].edge(str(root.id), str(root.right.id))
             cls.draw_node(graph, root.right)
+
+    @classmethod
+    def plot(cls, x_axis_train, y_axis_train, y_axis_fitted, x_axis_test=None, y_axis_test=None, y_axis_pred=None, test_set=False):
+
+        # adding additional point to remove the spae between train and test sets
+        if test_set:
+            x_axis_train = np.append(x_axis_train, x_axis_test[0])
+            y_axis_train = np.append(y_axis_train, y_axis_test[0])
+            y_axis_fitted = np.append(y_axis_fitted, y_axis_pred[0])
+
+        # preparing plot
+        ax = plt.axes()
+        # showing grid 
+        ax.grid(linestyle=':', linewidth=1, alpha=1, zorder=0)
+        # set the Label of X and Y axis
+        plt.xlabel("X")
+        plt.ylabel("Y")
+        # for markers and colors look ar the end of this file
+        line = [None, None, None, None]
+        line[0], = ax.plot(x_axis_train, y_axis_train, linestyle='-', color='black', linewidth=0.5, zorder=1)    
+        line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='black', linewidth=0.7, zorder=2)
+        if test_set:
+            line[2], = ax.plot(x_axis_test, y_axis_test, linestyle='-', color='black', linewidth=0.5, zorder=1)
+            line[3], = ax.plot(x_axis_test, y_axis_pred, linestyle=':' ,color='black', linewidth=0.7, zorder=2)
+            plt.axvline(x=x_axis_test[0], linestyle='-', color='black', linewidth='1')
+        # show graphes
+        plt.draw()
+        plt.show()

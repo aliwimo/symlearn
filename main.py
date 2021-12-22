@@ -6,7 +6,6 @@ from methods_n import Methods
 from errors import *
 from sys import argv
 from random import random
-# from box import BOX
 from fp import FP
 import math
 # from dfp import DFP
@@ -24,7 +23,7 @@ y = box_dataset[:, 2]
 t = np.arange(0, 290)
 
 
-# point_num = 20
+point_num = 20
 
 # f1
 # X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
@@ -66,17 +65,8 @@ t_train = t[:200]
 t_test = t[200:]
 
 
-# create variables list
-# VARIABLES = []
-# for i in range(X.shape[1]):
-#     var = 'x' + str(i)
-#     VARIABLES.append(var)
-# Parameters.VARIABLES = VARIABLES
-# Parameters.OPERATORS = ['+', '-', '*', '/']
-# Parameters.FUNCTIONS = ['sin', 'cos', 'exp', 'rlog']
-Parameters.CONSTANTS = [-1, 1]
-# Parameters.CONSTANTS_TYPE = 'intergers'
-# Parameters.ERROR_FUNCTION = MSE
+
+Parameters.CONSTANTS = [1, 2]
 Parameters.FEATURES = X.shape[1]
 
 
@@ -118,32 +108,13 @@ Parameters.FEATURES = X.shape[1]
 
 # bx.plot(X_train, X_test, y_train, y_test, y_predict)
 
-# from sklearn.metrics import confusion_matrix
-# score = confusion_matrix(y_test, y_predict)
-# print(score)
-
-
-# t = Tree()
-
-# t.root.set_value('operator')
-
-# l = Tree(parent_id=t.root.id)
-# l.root.set_value('constant')
-
-# r = Tree(parent_id=t.root.id)
-# r.root.set_value('constant')
-
-# t.left = l
-# t.right = r
-
-# print(t.tree_equation())
-# t.draw_tree('tree', 'Label')
-
 # defining parameters
-expressions = [Add, Sub, Mul, Div, Sin, Cos, Rlog, Exp, Pow]
+# expressions = [Add, Sub, Mul, Div, Sin, Cos, Rlog, Exp, Pow]
+# expressions = [Add, Sub, Mul, Div, Sin, Cos, Rlog, Exp]
+expressions = [Add, Sub, Mul, Div, Pow]
 terminals = [Variable, Constant]
 
-fp = FP(pop_size=50,
+fp = FP(pop_size=500,
         alpha=0.1,
         beta=0.5,
         gamma=1.5,
@@ -154,46 +125,17 @@ fp = FP(pop_size=50,
         error_function=MSE,
         expressions=expressions,
         terminals=terminals,
-        target_error=0,
+        target_error=1e-5,
         verbose=True
         )
 
 y_fitted = fp.fit(X_train, y_train)
+y_pred = fp.predict(X_test)
 
-
-# Parameters.FEATURES = 1
-# X = np.linspace(-1, 1, num=4).reshape(4, 1)
-
-# pop = Methods.generate_population(pop_size=10,
-#                                 initial_min_depth=1,
-#                                 initial_max_depth=3,
-#                                 expressions=expressions,
-#                                 terminals=terminals)
-
-# x1 = Methods.generate_individual('grow', 1, 3, expressions, terminals)
-# x2 = Methods.generate_individual('grow', 1, 3, expressions, terminals)
-
-# Methods.export_graph(x1, 'x1_tree', 'x1')
-# Methods.export_graph(x2, 'x2_tree', 'x2')
-
-# x3 = Methods.share(x1, x2)
-# Methods.export_graph(x3, 'x3_tree', 'x3')
-
-        
-# x1.insert_left_node(x3)
-# x1.insert_right_node(x4)
-
-# x5 = Variable()
-# x6 = Constant()
-# x2.insert_left_node(x5)
-# x2.insert_right_node(x6)
-
-# print(x0.get_equation())
-# print(x0.get_sub_nodes())
-# Methods.export_graph(x0, 'file_name', 'label')
-# print(x0.output(X))
-
-
-# for i in range(5):
-#     x = Variable()
-#     print(x)
+Methods.plot(x_axis_train=t_train,
+            y_axis_train=y_train,
+            y_axis_fitted=y_fitted,
+            x_axis_test=t_test,
+            y_axis_test=y_test,
+            y_axis_pred=y_pred,
+            test_set=True)
