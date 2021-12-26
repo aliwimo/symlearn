@@ -1,11 +1,10 @@
 import numpy as np
 from copy import deepcopy
-from random import randint, random
-# from tree import Tree
-from node_n import Node
+from random import random
+from node import Node
 from parameters import Parameters
-from methods_n import Methods
-from functions_n import *
+from methods import Methods
+from functions import *
 
 class FP:
 
@@ -40,14 +39,11 @@ class FP:
         self.terminals = terminals
         self.target_error = target_error
         self.verbose = verbose
-        
         self.current_evaluation = 0
         self.current_generation = 0
-
         self.best_individual = None
         self.population = None
         self.fitnesses = None
-
 
     def fit(self, X, y):
         self.X = X
@@ -56,16 +52,11 @@ class FP:
         self.get_initial_statistics()
         self.run()
         print(self.best_individual.fitness)
-        Methods.export_graph(self.best_individual, 'Best', 'Best')
-        print(self.best_individual.equation())
-        # return self.best_individual.calc_tree(X)
+        if self.verbose: self.export_best()
         return self.best_individual.output(X)
 
     def predict(self, X):
         return self.best_individual.output(X)
-
-    # def score(self, y_test, y_predict):
-    #     return abs(100 - np.sum(np.abs(y_test - y_predict))) / 100
 
     def generate_population(self):
         self.population = Methods.generate_population(
@@ -82,8 +73,7 @@ class FP:
         for index in range(self.pop_size):
             self.population[index].update_fitness(self.error_function, self.X, self.y)
             self.fitnesses[index] = self.population[index].fitness
-            if self.population[index].fitness <= min_error: 
-                min_index = index
+            if self.population[index].fitness <= min_error: min_index = index
         self.best_individual = deepcopy(self.population[min_index])
         self.best_individual.update_fitness(self.error_function, self.X, self.y)
         self.best_individual.update_fitness(self.error_function, self.X, self.y)
@@ -92,32 +82,24 @@ class FP:
         terminate = False
         if self.max_evaluations > -1 and self.current_evaluation > self.max_evaluations:
             terminate = True
-            # print(f'Evaluations {self.current_evaluation}')
-            # print('Terminated with max evaluations')
         elif self.max_generations >-1 and self.current_generation > self.max_generations:
             terminate = True
-            # print('Terminated with max generations')
         elif self.best_individual.fitness < self.target_error:
             terminate = True
-            # print('Terminated with target error')
         return terminate
 
     def rank(self, is_reversed=False):
         self.population, self.fitnesses = Methods.rank_trees(self.population, self.fitnesses, is_reversed)
     
-    
-    # def export_best(self):
-    #     if self.best_individual:
-    #         label = "Best error: "
-    #         label += str(round(self.best_individual.error, 3))
-    #         self.best_individual.draw_tree("best_model", label)
-    #         print(self.best_individual.tree_equation())
+    def export_best(self):
+        if self.best_individual:
+            label = "Best error: "
+            label += str(round(self.best_individual.fitness, 3))
+            Methods.export_graph(self.best_individual, "Best", label)
+            print(self.best_individual.equation())
 
-    # def attract(self, i, j):
-    #     distance = np.abs(self.population[i].error - self.population[j].error)
-    #     temp = deepcopy(self.population[i])
-    #     Methods.share(self.population[j], temp)
-    #     return temp
+    def attract(self, i, j):
+        return Methods.share(self.population[j], deepcopy(self.population[i]))
 
     def evalualte(self, current, temp):
         temp.update_fitness(self.error_function, self.X, self.y)
@@ -133,40 +115,23 @@ class FP:
     def run(self):
         while not self.must_terminate():
             self.rank(is_reversed=False)
-
             for i in range(self.pop_size):
                 if self.must_terminate(): break
-
                 for j in range(self.pop_size):
                     if self.must_terminate(): break
-
                     if self.population[i].fitness >= self.population[j].fitness:
-
-                        self.current_evaluation += 1
-                        # print(f'Evaluations: {self.current_evaluation}\t| Gen: {self.current_generation}\t| Fitness: {self.best_individual.fitness}')
-                        
-
-                        # temp = Methods.share(self.population[j], deepcopy(self.population[i]))
-                        if random() > 0.5:
-                            temp = Methods.share(self.population[j], deepcopy(self.population[i]))
-                        else:
-                            temp = Methods.change_node(deepcopy(self.population[i]), self.expressions + self.terminals)
-                        temp = Methods.change_node(deepcopy(self.population[i]), self.expressions + self.terminals)
-                        
+                        temp = self.attract(i, j)
                         if temp.depth() > self.max_depth:
-                            temp = Methods.generate_individual('grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
-
-                        self.evalualte(i, temp)
-
-                        # temp = self.attract(i, j)
-                        # temp = Methods.check_depth(temp, self.initial_min_depth, self.initial_max_depth, self.max_depth)
-                        # temp.update_error(self.X, self.y)
-                        # self.evalualte(i, temp)
-
+                            if random() > 0.5:
+                                temp = Methods.generate_individual('full', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
+                            else:
+                                temp = Methods.generate_individual('grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
+                        else:
+                            self.evalualte(i, temp)
+                            self.current_evaluation += 1
                     if self.must_terminate(): break
                 if self.must_terminate(): break
             if self.must_terminate(): break
-            
             # increase generation counter
             if not self.max_generations == -1: self.current_generation += 1
 

@@ -1,47 +1,140 @@
-from random import randint, random
-import matplotlib.pyplot as plt
 import numpy as np
-from tree import Tree
-from node_n import Node
-
+import matplotlib.pyplot as plt
+from random import random, choice
+from parameters import Parameters
+from graphviz import Digraph, Source
+from node import Node
+from copy import deepcopy
 
 class Methods:
 
-    # create initial trees by ramped half & half method
     @classmethod
-    def init_trees(cls, pop_size, initial_min_depth, initial_max_depth):
-        pop = []
+    def generate_population(cls, pop_size, initial_min_depth, initial_max_depth, expressions, terminals):
+        population = []
+        # generate with full method
         for _ in range(pop_size // 2):
-            tree = Tree() 
-            tree.create_tree('full', initial_min_depth, initial_max_depth)
-            pop.append(tree)
+            individual = cls.generate_individual('full', initial_min_depth, initial_max_depth, expressions, terminals)
+            population.append(individual)
+        # generate with grow method
         for _ in range((pop_size // 2), pop_size):
-            tree = Tree() 
-            tree.create_tree('grow', initial_min_depth, initial_max_depth)
-            pop.append(tree)
-        return pop
+            individual = cls.generate_individual('grow', initial_min_depth, initial_max_depth, expressions, terminals)
+            population.append(individual)
+        return population
 
     @classmethod
-    def rank_trees(cls, trees, errors, is_reversed=False):
-        sorted_indices = np.argsort(errors)
+    def generate_individual(cls,
+                            method,
+                            initial_min_depth,
+                            initial_max_depth,
+                            expressions,
+                            terminals,
+                            current_depth=0) -> Node:
+        if method == 'full':
+            if current_depth < initial_max_depth - 1:
+                node = choice(expressions)()
+            else:
+                node = choice(terminals)()
+        elif method == 'grow':
+            if current_depth < initial_min_depth:
+                node = choice(expressions)()
+            elif initial_min_depth <= current_depth < (initial_max_depth - 1):
+                if random() > 0.5:
+                    node = choice(expressions)()
+                else:
+                    node = choice(terminals)()
+            else:
+                node = choice(terminals)()
+        # create left and right branches
+        if node.inputs == 2:
+            child_1 = cls.generate_individual(method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
+            child_2 = cls.generate_individual(method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
+            node.add_left_node(child_1)
+            node.add_right_node(child_2)
+        elif node.inputs == 1:
+            child = cls.generate_individual(method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
+            node.add_right_node(child)
+        return node
+
+    @classmethod
+    def share(cls, source: Node, target: Node):
+        source_nodes = source.sub_nodes()
+        
+        if len(source_nodes) > 1:
+            if random() < 0.9:
+                is_function = False
+                while not is_function:
+                    instance_node = choice(source_nodes).sub_tree()
+                    if instance_node.inputs >= 1:
+                        is_function = True
+            else:
+                instance_node = choice(source_nodes).sub_tree()
+        else:
+            instance_node = choice(source_nodes).sub_tree()
+        target_nodes = target.sub_nodes()
+        removed_node = choice(target_nodes)
+        parent = removed_node.parent
+        if parent:
+            if removed_node.parent.left == removed_node:
+                parent.remove_left_node(removed_node)
+                parent.add_left_node(instance_node)
+            elif removed_node.parent.right == removed_node:
+                parent.remove_right_node(removed_node)
+                parent.add_right_node(instance_node)
+            return target
+        else:
+            return instance_node
+
+    @classmethod
+    def change_node(cls, source: Node, nodes_pool):
+        source_nodes = source.sub_nodes()
+        selected_node = choice(source_nodes)
+        same_inputs = False
+        while not same_inputs:
+            new_node = choice(nodes_pool)()
+            if new_node.inputs == selected_node.inputs:
+                same_inputs = True
+        parent = selected_node.parent
+        if parent:
+            if selected_node.parent.left == selected_node:
+                parent.remove_left_node(selected_node)
+                parent.add_left_node(new_node)
+            elif selected_node.parent.right == selected_node:
+                parent.remove_right_node(selected_node)
+                parent.add_right_node(new_node)
+
+        if selected_node.inputs == 2:
+            new_node.add_left_node(deepcopy(selected_node.left))
+            new_node.add_right_node(deepcopy(selected_node.right))
+        elif selected_node.inputs == 1:
+            new_node.add_right_node(deepcopy(selected_node.right))
+        return source
+    
+    @classmethod
+    def rank_trees(cls, trees, fitnesses, is_reversed=False):
+        sorted_indices = np.argsort(fitnesses)
         if not is_reversed: sorted_indices = np.flip(sorted_indices)
-        errors.sort(reverse=not is_reversed)
+        fitnesses.sort(reverse=not is_reversed)
         temp_trees = trees.copy()
         for (m, n) in zip(range(len(trees)), sorted_indices):
             trees[m] = temp_trees[n]
-        return trees, errors
-    
-    @classmethod
-    def share(cls, tree1, tree2):
-        sub = tree1.copy_subtree()
-        tree2.paste_subtree(sub)
+        return trees, fitnesses
 
     @classmethod
-    def check_depth(cls, tree: Tree, initial_min_depth, initial_max_depth, max_depth):
-        if tree.tree_depth() > max_depth:
-            method = 'grow' if randint(1, 2) == 1 else 'full'
-            tree.create_tree(method, initial_min_depth, initial_max_depth)
-        return tree
+    def export_graph(cls, root: Node, file_name, label):
+        graph = [Digraph()]
+        graph[0].attr(kw = 'graph', label = label)
+        cls.draw_node(graph, root)
+        Source(graph[0], filename = file_name + '.gv', format=Parameters.Export_EXT).render()
+
+    @classmethod
+    def draw_node(cls, graph, root: Node):
+        graph[0].node(str(root.id), str(root))
+        if root.left:
+            graph[0].edge(str(root.id), str(root.left.id))
+            cls.draw_node(graph, root.left)
+        if root.right:
+            graph[0].edge(str(root.id), str(root.right.id))
+            cls.draw_node(graph, root.right)
 
     @classmethod
     def plot(cls, x_axis_train, y_axis_train, y_axis_fitted, x_axis_test=None, y_axis_test=None, y_axis_pred=None, test_set=False):
@@ -70,40 +163,3 @@ class Methods:
         # show graphes
         plt.draw()
         plt.show()
-
-
-    
-    # export tree's graph
-    # @classmethod
-    # def export_tree(cls, root, file_name, label):
-    #     graph = [Digraph()]
-    #     graph[0].attr(kw = 'graph', label = label)
-    #     nodes = root.get_sub_nodes()
-    #     for n in nodes:
-    #         cls.draw_node(n, graph)
-    #     Source(graph[0], filename = file_name + '.gv', format='png').render()
-
-    @classmethod
-    def export_graph(cls, root: Node, file_name, label):
-        graph = [Digraph()]
-        graph[0].attr(kw = 'graph', label = label)
-        cls.draw_node(graph, root)
-        Source(graph[0], filename = file_name + '.gv', format='png').render()
-
-    @classmethod
-    def draw_node(cls, graph, root: Node):
-        graph[0].node(str(root.id), str(root))
-        if root.left:
-            graph[0].edge(str(root.id), str(root.left.id))
-            cls.draw_node(graph, root.left)
-        if root.right:
-            graph[0].edge(str(root.id), str(root.right.id))
-            cls.draw_node(graph, root.right)
-
-
-    # @classmethod
-    # def draw_node(cls, node, graph):
-    #     if node.parent is not None:
-    #         graph[0].edge(str(node.parent.id), str(node.id))
-    #     graph[0].node(str(node.id), node)
-    
