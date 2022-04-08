@@ -148,18 +148,21 @@ class Methods:
         # preparing plot
         ax = plt.axes()
         # showing grid 
-        ax.grid(linestyle=':', linewidth=1, alpha=1, zorder=0)
+        ax.grid(linestyle=':', linewidth=1, alpha=1, zorder=1)
         # set the Label of X and Y axis
         plt.xlabel("X")
         plt.ylabel("Y")
         # for markers and colors look ar the end of this file
         line = [None, None, None, None]
-        line[0], = ax.plot(x_axis_train, y_axis_train, linestyle='-', color='black', linewidth=0.5, zorder=1)    
-        line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='black', linewidth=0.7, zorder=2)
+        line[0], = ax.plot(x_axis_train, y_axis_train, linestyle='-', color='black', linewidth=0.7, zorder=2, label='Targeted')    
+        line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='blue', marker='^', markerfacecolor='white', linewidth=0.7, zorder=3, label='Generated')
+        # line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='black', linewidth=0.7, zorder=3, label='Generated')
         if test_set:
-            line[2], = ax.plot(x_axis_test, y_axis_test, linestyle='-', color='black', linewidth=0.5, zorder=1)
-            line[3], = ax.plot(x_axis_test, y_axis_pred, linestyle=':' ,color='black', linewidth=0.7, zorder=2)
+            line[2], = ax.plot(x_axis_test, y_axis_test, linestyle='-', color='black', linewidth=0.5, zorder=2)
+            line[3], = ax.plot(x_axis_test, y_axis_pred, linestyle=':' ,color='black', linewidth=0.7, zorder=3)
             plt.axvline(x=x_axis_test[0], linestyle='-', color='black', linewidth='1')
         # show graphes
         plt.draw()
+        plt.savefig(fname='plot', format='pdf')
+        plt.legend()
         plt.show()

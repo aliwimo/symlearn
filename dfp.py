@@ -55,6 +55,9 @@ class DFP:
         if self.verbose: self.export_best()
         return self.best_individual.output(X)
 
+    def score(self, X, y):
+        return self.error_function(self.best_individual.output(X), y)
+
     def predict(self, X):
         return self.best_individual.output(X)
 
@@ -93,9 +96,9 @@ class DFP:
     
     def export_best(self):
         if self.best_individual:
-            label = "Best error: "
-            label += str(round(self.best_individual.fitness, 3))
-            Methods.export_graph(self.best_individual, "Best", label)
+            # label = "Best error: "
+            # label += str(round(self.best_individual.fitness, 3))
+            # Methods.export_graph(self.best_individual, "Best", label)
             print(self.best_individual.equation())
 
     def attract(self, i, j):
@@ -139,9 +142,9 @@ class DFP:
                                 temp = Methods.generate_individual('full', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
                             else:
                                 temp = Methods.generate_individual('grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
-                        else:
-                            self.evalualte(i, temp)
-                            self.current_evaluation += 1
+                        
+                        self.evalualte(i, temp)
+                        self.current_evaluation += 1
                     if self.must_terminate(): break
                 if self.must_terminate(): break
             if self.must_terminate(): break

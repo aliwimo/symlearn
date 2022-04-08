@@ -55,6 +55,9 @@ class FP:
         if self.verbose: self.export_best()
         return self.best_individual.output(X)
 
+    def score(self, X, y):
+        return self.error_function(self.best_individual.output(X), y)
+
     def predict(self, X):
         return self.best_individual.output(X)
 

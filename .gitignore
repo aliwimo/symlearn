@@ -2,4 +2,4 @@ __pycache__/
 **/*test.*
 **/*.gv
 **/*.png
-**/*/data/
+**/*.pdf
