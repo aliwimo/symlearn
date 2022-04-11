@@ -44,6 +44,8 @@ class FP:
         self.best_individual = None
         self.population = None
         self.fitnesses = None
+        self.ft_recorder = []
+        self.ev_recorder = []
 
     def fit(self, X, y):
         self.X = X
@@ -52,6 +54,8 @@ class FP:
         self.get_initial_statistics()
         self.run()
         print(self.best_individual.fitness)
+        print(self.ev_recorder)
+        print(self.ft_recorder)
         if self.verbose: self.export_best()
         return self.best_individual.output(X)
 
@@ -116,6 +120,8 @@ class FP:
     
     # standard firefly programming method (FP)
     def run(self):
+        self.ft_recorder.append(self.best_individual.fitness)
+        self.ev_recorder.append(self.current_evaluation)
         while not self.must_terminate():
             self.rank(is_reversed=False)
             for i in range(self.pop_size):
@@ -124,6 +130,7 @@ class FP:
                     if self.must_terminate(): break
                     if self.population[i].fitness >= self.population[j].fitness:
                         temp = self.attract(i, j)
+                        self.current_evaluation += 1
                         if temp.depth() > self.max_depth:
                             if random() > 0.5:
                                 temp = Methods.generate_individual('full', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
@@ -131,7 +138,10 @@ class FP:
                                 temp = Methods.generate_individual('grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
                         else:
                             self.evalualte(i, temp)
-                            self.current_evaluation += 1
+
+                        if self.current_evaluation % 1000 == 0:
+                            self.ft_recorder.append(self.best_individual.fitness)
+                            self.ev_recorder.append(self.current_evaluation)
                     if self.must_terminate(): break
                 if self.must_terminate(): break
             if self.must_terminate(): break

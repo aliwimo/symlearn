@@ -44,6 +44,8 @@ class DFP:
         self.best_individual = None
         self.population = None
         self.fitnesses = None
+        self.ft_recorder = []
+        self.ev_recorder = []
 
     def fit(self, X, y):
         self.X = X
@@ -52,6 +54,8 @@ class DFP:
         self.get_initial_statistics()
         self.run()
         print(self.best_individual.fitness)
+        print(self.ev_recorder)
+        print(self.ft_recorder)
         if self.verbose: self.export_best()
         return self.best_individual.output(X)
 
@@ -129,6 +133,8 @@ class DFP:
     
     # standard firefly programming method (FP)
     def run(self):
+        self.ft_recorder.append(self.best_individual.fitness)
+        self.ev_recorder.append(self.current_evaluation)
         while not self.must_terminate():
             self.rank(is_reversed=False)
             for i in range(self.pop_size):
@@ -145,6 +151,10 @@ class DFP:
                         
                         self.evalualte(i, temp)
                         self.current_evaluation += 1
+
+                        if self.current_evaluation % 1000 == 0:
+                            self.ft_recorder.append(self.best_individual.fitness)
+                            self.ev_recorder.append(self.current_evaluation)
                     if self.must_terminate(): break
                 if self.must_terminate(): break
             if self.must_terminate(): break

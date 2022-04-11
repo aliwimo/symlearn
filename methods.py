@@ -163,6 +163,5 @@ class Methods:
             plt.axvline(x=x_axis_test[0], linestyle='-', color='black', linewidth='1')
         # show graphes
         plt.draw()
-        plt.savefig(fname='plot', format='pdf')
         plt.legend()
         plt.show()

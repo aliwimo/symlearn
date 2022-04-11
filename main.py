@@ -23,8 +23,8 @@ np.seterr(all='ignore')
 point_num = 20
 
 # f1
-# X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
-# y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
+X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
+y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
 
 # f2
 # X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
@@ -51,8 +51,8 @@ point_num = 20
 # y = np.sin(X[:, 0]) + np.sin(X[:, 1] ** 2)
 
 # f8
-X = np.linspace((0, 0), (1, 1), num=point_num).reshape(point_num, 2)
-y = 2 * np.sin(X[:, 0]) * np.cos(X[:, 1])
+# X = np.linspace((0, 0), (1, 1), num=point_num).reshape(point_num, 2)
+# y = 2 * np.sin(X[:, 0]) * np.cos(X[:, 1])
 
 # Take a dataset split
 # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, shuffle=False)
