@@ -124,7 +124,7 @@ class Methods:
         graph = [Digraph()]
         graph[0].attr(kw = 'graph', label = label)
         cls.draw_node(graph, root)
-        Source(graph[0], filename = file_name + '.gv', format=Parameters.Export_EXT).render()
+        Source(graph[0], filename = file_name + '.gv', format=Parameters.EXPORT_EXT).render()
 
     @classmethod
     def draw_node(cls, graph, root: Node):
@@ -155,11 +155,12 @@ class Methods:
         # for markers and colors look ar the end of this file
         line = [None, None, None, None]
         line[0], = ax.plot(x_axis_train, y_axis_train, linestyle='-', color='black', linewidth=0.7, zorder=2, label='Targeted')    
-        line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='blue', marker='^', markerfacecolor='white', linewidth=0.7, zorder=3, label='Generated')
+        line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='red', marker='o', markersize=3, markerfacecolor='white', linewidth=0.7, zorder=3, label='Generated')
         # line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='black', linewidth=0.7, zorder=3, label='Generated')
         if test_set:
             line[2], = ax.plot(x_axis_test, y_axis_test, linestyle='-', color='black', linewidth=0.5, zorder=2)
-            line[3], = ax.plot(x_axis_test, y_axis_pred, linestyle=':' ,color='black', linewidth=0.7, zorder=3)
+            line[3], = ax.plot(x_axis_test, y_axis_pred, linestyle=':', color='blue', marker='o', markerfacecolor='white', markersize=3, linewidth=0.7, zorder=3, label='Generated')
+            # line[3], = ax.plot(x_axis_test, y_axis_pred, linestyle=':' ,color='black', linewidth=0.7, zorder=3)
             plt.axvline(x=x_axis_test[0], linestyle='-', color='black', linewidth='1')
         # show graphes
         plt.draw()

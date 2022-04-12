@@ -5,6 +5,7 @@ from node import Node
 from parameters import Parameters
 from methods import Methods
 from functions import *
+from sklearn.metrics import r2_score
 
 class DFP:
 
@@ -44,8 +45,6 @@ class DFP:
         self.best_individual = None
         self.population = None
         self.fitnesses = None
-        self.ft_recorder = []
-        self.ev_recorder = []
 
     def fit(self, X, y):
         self.X = X
@@ -54,13 +53,11 @@ class DFP:
         self.get_initial_statistics()
         self.run()
         print(self.best_individual.fitness)
-        print(self.ev_recorder)
-        print(self.ft_recorder)
         if self.verbose: self.export_best()
         return self.best_individual.output(X)
 
-    def score(self, X, y):
-        return self.error_function(self.best_individual.output(X), y)
+    def score(self, y_test, y_pred):
+        return r2_score(y_test, y_pred)
 
     def predict(self, X):
         return self.best_individual.output(X)
@@ -129,12 +126,10 @@ class DFP:
             if self.population[current].fitness < self.best_individual.fitness:
                 self.best_individual = deepcopy(self.population[current])
                 if self.verbose:
-                    print(f'Evaluations: {self.current_evaluation}\t| Gen: {self.current_generation}\t| Fitness: {self.best_individual.fitness}')
-    
+                    print(f'Evaluations: {self.current_evaluation} | Fitness: {self.best_individual.fitness}')
+
     # standard firefly programming method (FP)
     def run(self):
-        self.ft_recorder.append(self.best_individual.fitness)
-        self.ev_recorder.append(self.current_evaluation)
         while not self.must_terminate():
             self.rank(is_reversed=False)
             for i in range(self.pop_size):
@@ -148,13 +143,9 @@ class DFP:
                                 temp = Methods.generate_individual('full', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
                             else:
                                 temp = Methods.generate_individual('grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
-                        
                         self.evalualte(i, temp)
                         self.current_evaluation += 1
 
-                        if self.current_evaluation % 1000 == 0:
-                            self.ft_recorder.append(self.best_individual.fitness)
-                            self.ev_recorder.append(self.current_evaluation)
                     if self.must_terminate(): break
                 if self.must_terminate(): break
             if self.must_terminate(): break
