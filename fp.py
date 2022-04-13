@@ -52,9 +52,7 @@ class FP:
         self.generate_population()
         self.get_initial_statistics()
         self.run()
-        print(self.best_individual.fitness)
         if self.verbose: self.export_best()
-        return self.best_individual.output(X)
 
     def score(self, y_test, y_pred):
         return r2_score(y_test, y_pred)
