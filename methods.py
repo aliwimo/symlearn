@@ -5,6 +5,7 @@ from parameters import Parameters
 from graphviz import Digraph, Source
 from node import Node
 from copy import deepcopy
+from functions import Constant
 
 class Methods:
 
@@ -135,6 +136,30 @@ class Methods:
         if root.right:
             graph[0].edge(str(root.id), str(root.right.id))
             cls.draw_node(graph, root.right)
+
+
+    @classmethod
+    def simplify(cls, root: Node):
+        has_variables = False
+        if root.type == 'variable': has_variables = True
+        if root.left: has_variables = cls.simplify(root.left)
+        if root.right: has_variables = cls.simplify(root.right)
+        if not has_variables:
+            result = root.output(np.array([[1]]))
+            new_node = Constant()
+            new_node.value = result[0]
+
+            parent = root.parent
+            if parent:
+                if root.parent.left == root:
+                    parent.remove_left_node(root)
+                    parent.add_left_node(new_node)
+                elif root.parent.right == root:
+                    parent.remove_right_node(root)
+                    parent.add_right_node(new_node)
+        return has_variables
+        
+
 
     @classmethod
     def plot(cls, x_axis_train, y_axis_train, y_axis_fitted, x_axis_test=None, y_axis_test=None, y_axis_pred=None, test_set=False):

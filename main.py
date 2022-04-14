@@ -26,8 +26,8 @@ point_num = 20
 
 
 # f1
-X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
-y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
+# X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
+# y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
 
 # f2
 # X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
@@ -50,8 +50,8 @@ y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
 # y = np.sqrt(X[:, 0])
 
 # f7
-# X = np.linspace((0, 0), (1, 1), num=point_num).reshape(point_num, 2)
-# y = np.sin(X[:, 0]) + np.sin(X[:, 1] ** 2)
+X = np.linspace((0, 0), (1, 1), num=point_num).reshape(point_num, 2)
+y = np.sin(X[:, 0]) + np.sin(X[:, 1] ** 2)
 
 # f8
 # X = np.linspace((0, 0), (1, 1), num=point_num).reshape(point_num, 2)
@@ -87,20 +87,21 @@ model = DFP(pop_size=50,
         initial_min_depth=0,
         initial_max_depth=6,
         max_depth=15,
-        error_function=MSE,
+        error_function=SOD,
         expressions=expressions,
         terminals=terminals,
-        target_error=0,
+        target_error=1e-5,
         verbose=True
         )
 
-y_fitted = model.fit(X_train, y_train)
+model.fit(X_train, y_train)
+y_fitted = model.predict(X_train)
 y_pred = model.predict(X_test)
 # print(fp.best_individual.equation())
-train_score = explained_variance_score(y_train, y_fitted)
-test_score = explained_variance_score(y_test, y_pred)
-print('Train score: {}'.format(train_score))
-print('Test score: {}'.format(test_score))
+# train_score = explained_variance_score(y_train, y_fitted)
+# test_score = explained_variance_score(y_test, y_pred)
+# print('Train score: {}'.format(train_score))
+# print('Test score: {}'.format(test_score))
 
 # Methods.plot(x_axis_train=X[:, 0],
 #                 y_axis_train= y,

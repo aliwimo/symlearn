@@ -6,6 +6,7 @@ from parameters import Parameters
 from methods import Methods
 from functions import *
 from sklearn.metrics import r2_score
+from datetime import datetime, timedelta
 
 class DFP:
 
@@ -16,6 +17,7 @@ class DFP:
                 gamma=1.5,
                 max_evaluations=10000,
                 max_generations=-1,
+                max_time=None,
                 initial_min_depth=0,
                 initial_max_depth=6,
                 max_depth=15,
@@ -32,6 +34,7 @@ class DFP:
         self.gamma = gamma
         self.max_evaluations = max_evaluations
         self.max_generations = max_generations
+        self.max_time = max_time
         self.initial_min_depth = initial_min_depth
         self.initial_max_depth = initial_max_depth
         self.max_depth = max_depth
@@ -49,10 +52,15 @@ class DFP:
     def fit(self, X, y):
         self.X = X
         self.y = y
+        if self.max_time: 
+            self.start_time = datetime.now()
+            self.end_time = self.start_time + timedelta(seconds=self.max_time)
         self.generate_population()
         self.get_initial_statistics()
         self.run()
-        if self.verbose: self.export_best()
+        if self.verbose: 
+            print(f'Total time: {datetime.now() - self.start_time}')
+            print(f'Evaluations: {self.current_evaluation}')
 
     def score(self, y_test, y_pred):
         return r2_score(y_test, y_pred)
@@ -67,6 +75,9 @@ class DFP:
                             initial_max_depth=self.initial_max_depth,
                             expressions=self.expressions,
                             terminals=self.terminals)
+        for i in self.population:
+            Methods.simplify(i)
+
 
     def get_initial_statistics(self):
         self.fitnesses = [0] * self.pop_size
@@ -82,7 +93,9 @@ class DFP:
 
     def must_terminate(self):
         terminate = False
-        if self.max_evaluations > -1 and self.current_evaluation > self.max_evaluations:
+        if self.max_time and datetime.now() > self.end_time: 
+            terminate = True
+        elif self.max_evaluations > -1 and self.current_evaluation > self.max_evaluations:
             terminate = True
         elif self.max_generations >-1 and self.current_generation > self.max_generations:
             terminate = True
@@ -93,11 +106,11 @@ class DFP:
     def rank(self, is_reversed=False):
         self.population, self.fitnesses = Methods.rank_trees(self.population, self.fitnesses, is_reversed)
     
-    def export_best(self):
+    def export_best(self, filename='Best'):
         if self.best_individual:
-            # label = "Best error: "
-            # label += str(round(self.best_individual.fitness, 3))
-            # Methods.export_graph(self.best_individual, "Best", label)
+            label = "Best error: "
+            label += str(round(self.best_individual.fitness, 3))
+            Methods.export_graph(self.best_individual, filename, label)
             print(self.best_individual.equation())
 
     def attract(self, i, j):
@@ -136,6 +149,7 @@ class DFP:
                     if self.must_terminate(): break
                     if self.population[i].fitness >= self.population[j].fitness:
                         temp = self.attract(i, j)
+                        Methods.simplify(temp)
                         if temp.depth() > self.max_depth:
                             if random() > 0.5:
                                 temp = Methods.generate_individual('full', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)

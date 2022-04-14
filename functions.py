@@ -142,7 +142,10 @@ class Variable(Node):
         return 'x' + str(self.rank)
 
     def output(self, X):
-        return X[:, self.rank]
+        if X.shape[0] == 1:
+            return np.array([1] * X.shape[0])
+        else:
+            return X[:, self.rank]
 
 class Constant(Node):
     def __init__(self):
@@ -155,7 +158,7 @@ class Constant(Node):
             self.value = uniform(Parameters.CONSTANTS[0], Parameters.CONSTANTS[1]) 
 
     def __repr__(self):
-        return str(self.value)
+        return str(round(self.value, 2))
 
     def output(self, X):
         return np.array([self.value] * X.shape[0])
