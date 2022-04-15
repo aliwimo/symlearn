@@ -1,0 +1,14 @@
+{
+    "method": "DFP",
+    "range": [-1, 1],
+    "evaluations": 1000000,
+    "functional set": ["Add", "Sub", "Mul", "Div", "Pow"],
+    "population size": 50,
+    "alpha": 1e-4,
+    "beta": 1e-2,
+    "gamma": 1e-1,
+    "initial minimum depth": 3,
+    "initial maximum depth": 6,
+    "maximum depth": 6,
+    "objective fucntion": "MSE"
+}

@@ -1,0 +1,14 @@
+{
+    "method": "DFP",
+    "range": [-5, 5],
+    "execution times": [10, 15, 20],
+    "functional set": ["Add", "Sub", "Mul", "Div"],
+    "population size": 50,
+    "alpha": 0.01,
+    "beta": 0.05,
+    "gamma": 0.1,
+    "initial minimum depth": 0,
+    "initial maximum depth": 6,
+    "maximum depth": 15,
+    "objective fucntion": "r2 score"
+}

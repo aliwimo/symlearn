@@ -4,3 +4,6 @@ __pycache__/
 **/*.png
 **/*.pdf
 images/
+**/**/trees
+**/**/graphs
+**/**/*backup*
