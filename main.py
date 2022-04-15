@@ -60,7 +60,7 @@ model = DFP(pop_size=50,
         alpha=0.1,
         beta=0.5,
         gamma=1.0,
-        max_evaluations=25000,
+        max_evaluations=2000,
         initial_min_depth=0,
         initial_max_depth=6,
         max_depth=15,
@@ -74,6 +74,8 @@ model = DFP(pop_size=50,
 model.fit(X_train, y_train)
 y_fitted = model.predict(X_train)
 y_pred = model.predict(X_test)
+
+model.export_best()
 
 Methods.plot(x_axis_train=X_train[:, 0],
             y_axis_train=y_train,

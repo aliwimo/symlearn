@@ -107,7 +107,7 @@ class FP:
         if self.best_individual:
             label = "Best error: "
             label += str(round(self.best_individual.fitness, 3))
-            Methods.export_graph(self.best_individual, filename, label)
+            Methods.export_graph(self.best_individual, 'images\\' + filename, label)
             print(self.best_individual.equation())
 
     def attract(self, i, j):
