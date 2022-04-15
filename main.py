@@ -10,24 +10,13 @@ from random import random
 from fp import FP
 from dfp import DFP
 
-
-
 np.seterr(all='ignore')
-
-
-# box series
-# box_dataset = np.loadtxt('box.dat')
-# X = box_dataset[:, [0, 1]]
-# y = box_dataset[:, 2]
-# t = np.arange(0, 290)
-
 
 point_num = 20
 
-
 # f1
-# X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
-# y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
+X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
+y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
 
 # f2
 # X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
@@ -50,31 +39,19 @@ point_num = 20
 # y = np.sqrt(X[:, 0])
 
 # f7
-X = np.linspace((0, 0), (1, 1), num=point_num).reshape(point_num, 2)
-y = np.sin(X[:, 0]) + np.sin(X[:, 1] ** 2)
+# X = np.linspace((0, 0), (1, 1), num=point_num).reshape(point_num, 2)
+# y = np.sin(X[:, 0]) + np.sin(X[:, 1] ** 2)
 
 # f8
 # X = np.linspace((0, 0), (1, 1), num=point_num).reshape(point_num, 2)
 # y = 2 * np.sin(X[:, 0]) * np.cos(X[:, 1])
 
-
-# Take a dataset split
+# split dataset into training and testing datasets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
-
-# X_train = X[0:200, :]
-# X_test = X[200:, :]
-# y_train = y[0:200]
-# y_test = y[200:]
-# t_train = t[:200]
-# t_test = t[200:]
-
-
 
 Parameters.CONSTANTS = [1, 2]
 Parameters.FEATURES = X.shape[1]
 Parameters.CONSTANTS_TYPE = 'integer'
-# Parameters.CONSTANTS_TYPE = 'range'
-
 expressions = [Add, Sub, Mul, Div, Sin, Cos, Rlog, Exp]
 # expressions = [Add, Sub, Mul, Div]
 terminals = [Variable, Constant]
@@ -97,18 +74,6 @@ model = DFP(pop_size=50,
 model.fit(X_train, y_train)
 y_fitted = model.predict(X_train)
 y_pred = model.predict(X_test)
-# print(fp.best_individual.equation())
-# train_score = explained_variance_score(y_train, y_fitted)
-# test_score = explained_variance_score(y_test, y_pred)
-# print('Train score: {}'.format(train_score))
-# print('Test score: {}'.format(test_score))
-
-# Methods.plot(x_axis_train=X[:, 0],
-#                 y_axis_train= y,
-#                 y_axis_fitted=y_fitted)
-# Methods.plot(x_axis_train=X[:, 0],
-#                 y_axis_train= y,
-#                 y_axis_fitted=y_fitted)
 
 Methods.plot(x_axis_train=X_train[:, 0],
             y_axis_train=y_train,
@@ -117,5 +82,3 @@ Methods.plot(x_axis_train=X_train[:, 0],
             y_axis_test=y_test,
             y_axis_pred=y_pred,
             test_set=True)
-
-# Methods.plot(x_axis_train=, y_axis_train, y_axis_fitted)

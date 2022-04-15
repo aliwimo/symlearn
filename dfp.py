@@ -20,6 +20,7 @@ class DFP:
                 max_time=None,
                 initial_min_depth=0,
                 initial_max_depth=6,
+                min_depth=1,
                 max_depth=15,
                 error_function=None,
                 expressions=[Add, Sub, Mul],
@@ -37,6 +38,7 @@ class DFP:
         self.max_time = max_time
         self.initial_min_depth = initial_min_depth
         self.initial_max_depth = initial_max_depth
+        self.min_depth = min_depth
         self.max_depth = max_depth
         self.error_function = error_function
         self.expressions = expressions
@@ -59,7 +61,7 @@ class DFP:
         self.get_initial_statistics()
         self.run()
         if self.verbose: 
-            print(f'Total time: {datetime.now() - self.start_time}')
+            if self.max_time: print(f'Total time: {datetime.now() - self.start_time}')
             print(f'Evaluations: {self.current_evaluation}')
 
     def score(self, y_test, y_pred):
@@ -150,7 +152,7 @@ class DFP:
                     if self.population[i].fitness >= self.population[j].fitness:
                         temp = self.attract(i, j)
                         Methods.simplify(temp)
-                        if temp.depth() > self.max_depth:
+                        if temp.depth() > self.max_depth or temp.depth() < self.min_depth:
                             if random() > 0.5:
                                 temp = Methods.generate_individual('full', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
                             else:

@@ -9,8 +9,8 @@ def SOD(Y, y):
 
 # Mean Square Error
 def MSE(Y, y):
-    return mean_squared_error(Y, y)
-    # return ((Y - y)**2).mean(axis=0)
+    # return mean_squared_error(Y, y)
+    return ((Y - y)**2).mean(axis=0)
 
 # Root Mean Square Error
 def RMSE(Y, y):
