@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 
 np.seterr(all='ignore')
 
-df = pd.read_csv('btc_usd.csv')
+df = pd.read_csv('data/btc_usd.csv')
 
 df['Date'] = pd.to_datetime(df['Date'])
 df['PastDay'] = df['Close'].shift(1)
@@ -46,8 +46,8 @@ Parameters.CONSTANTS_TYPE = 'range'
 expressions = [Add, Sub, Mul, Div]
 terminals = [Variable, Constant]
 
-max_time = '20'
-method = 'FP'
+max_time = '10'
+method = 'DFP'
 
 
 model = DFP(pop_size=50,
@@ -59,7 +59,7 @@ model = DFP(pop_size=50,
         initial_min_depth=0,
         initial_max_depth=6,
         max_depth=15,
-        error_function=IR2,
+        error_function=RMSE,
         expressions=expressions,
         terminals=terminals,
         target_error=0,

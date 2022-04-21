@@ -14,12 +14,13 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
 
+import os
+from pathlib import Path
+
 np.seterr(all='ignore')
 
-df = pd.read_csv('btc_usd.csv')
-
 # box series
-box_dataset = np.loadtxt('box.dat')
+box_dataset = np.loadtxt('data/box.dat')
 X = box_dataset[:, [0, 1]]
 y = box_dataset[:, 2]
 t = np.arange(0, 290)
@@ -31,7 +32,6 @@ y_test = y[200:]
 t_train = t[:201]
 t_test = t[200:]
 
-
 Parameters.CONSTANTS = [-1, 1]
 Parameters.FEATURES = X_train.shape[1]
 Parameters.CONSTANTS_TYPE = 'range'
@@ -39,51 +39,84 @@ Parameters.CONSTANTS_TYPE = 'range'
 expressions = [Add, Sub, Mul, Div, Sin, Cos, Rlog, Exp, Pow]
 terminals = [Variable, Constant]
 
-max_time = '20'
-method = 'FP'
+exp = '3'
+method = 'DFP'
+export_data = True
+
+if export_data:
+    working_dir = Path(__file__).parent.absolute()
+    export_path = 'temp/BOXN/' + method + '/' + exp + '/'
+    dirpath = str(working_dir) + '/' + export_path
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath + 'graphs/')  
 
 
-model = DFP(pop_size=50,
-        alpha=1e-4,
-        beta=1e-2,
-        gamma=1e-1,
-        max_evaluations=100000,
-        initial_min_depth=3,
-        initial_max_depth=6,
-        min_depth=3,
-        max_depth=17,
-        error_function=MSE,
-        expressions=expressions,
-        terminals=terminals,
-        target_error=0,
-        verbose=True
-        )
+for i in range(30, 40):
 
-model.fit(X_train, y_train)
-y_fit = model.predict(X_train)
-y_pred = model.predict(X_test)
+    model = DFP(pop_size=50,
+            alpha=10e-4,
+            beta=10e-2,
+            gamma=10e-1,
+            max_evaluations=50000,
+            initial_min_depth=3,
+            initial_max_depth=6,
+            min_depth=3,
+            max_depth=6,
+            error_function=MSE,
+            expressions=expressions,
+            terminals=terminals,
+            target_error=0,
+            verbose=True
+            )
 
-statistics = '{} {}\n'.format(
-    mean_squared_error(y_train, y_fit),
-    mean_squared_error(y_test, y_pred)
-)
+    
 
-model.export_best()
-print(statistics)
+    model.fit(X_train, y_train)
+    y_fit = model.predict(X_train)
+    y_pred = model.predict(X_test)
 
+    statistics = '{} {}'.format(
+        mean_squared_error(y_train, y_fit),
+        mean_squared_error(y_test, y_pred)
+    )
+    
 
-ax = plt.axes()
-ax.grid(linestyle=':', linewidth=0.5, alpha=1, zorder=1)
-plt.ylabel("BTC Price ($)")
-line = [None, None, None, None]
-line[0], = ax.plot(t_train, y_train, linestyle=':', color='black', linewidth=0.7, zorder=2, label='Targeted')    
-line[1], = ax.plot(t_train, y_fit, linestyle='-', color='red', linewidth=0.7, zorder=3, label='Trained')
-line[2], = ax.plot(t_test, y_test, linestyle=':', color='black', linewidth=0.7, zorder=2)
-line[3], = ax.plot(t_test, y_pred, linestyle='-', color='blue', linewidth=0.7, zorder=3, label='Predicted')
-plt.axvline(x=t_test[0], linestyle='-', color='black', linewidth='1')
-plt.draw()
-plt.legend()
-plt.show()
+    iteration = str("{0:0=2d}".format(i + 1))
+    print(f'Iteration: {iteration}')
+    print(statistics)
+
+    if export_data:
+        model.export_best(export_path=export_path + '/trees/', filename=iteration)
+        with open(dirpath + '/models.dat', 'a') as f1:
+            f1.write(model.best_individual.equation() + '\n')
+        with open(dirpath + '/records.dat', 'a') as f2:
+            f2.write(statistics + '\n')
+    
+    print('-' * 100)
+
+    
+
+    graph_path = dirpath + 'graphs/' + iteration + '.' + Parameters.EXPORT_EXT
+    print(graph_path)
+
+    ax = plt.axes()
+    ax.grid(linestyle=':', linewidth=0.5, alpha=1, zorder=1)
+    plt.ylabel("BTC Price ($)")
+    line = [None, None, None, None]
+    line[0], = ax.plot(t_train, y_train, linestyle=':', color='black', linewidth=0.7, zorder=2, label='Targeted')    
+    line[1], = ax.plot(t_train, y_fit, linestyle='-', color='red', linewidth=0.7, zorder=3, label='Trained')
+    line[2], = ax.plot(t_test, y_test, linestyle=':', color='black', linewidth=0.7, zorder=2)
+    line[3], = ax.plot(t_test, y_pred, linestyle='-', color='blue', linewidth=0.7, zorder=3, label='Predicted')
+    plt.axvline(x=t_test[0], linestyle='-', color='black', linewidth='1')
+    plt.draw()
+    plt.legend()
+    if export_data:
+        fig = plt.gcf()
+        fig.set_size_inches(13.66, 6.66)
+        fig.savefig(graph_path, dpi=100)
+    else:
+        export_data: plt.show()
+
 # for i in range(30):
 
 #     model = FP(pop_size=50,

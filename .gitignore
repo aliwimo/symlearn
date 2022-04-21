@@ -1,5 +1,5 @@
 __pycache__/
-**/*test.*
+**/**/*test*.*
 **/*.gv
 **/*.png
 **/*.pdf
@@ -7,3 +7,5 @@ images/
 **/**/trees
 **/**/graphs
 **/**/*backup*
+temp/
+utilities/

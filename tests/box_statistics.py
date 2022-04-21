@@ -1,13 +1,15 @@
 import numpy as np
 
 methods = ['FP', 'DFP']
-exp = '1'
+# methods = ['FP']
+exp = '4'
 
 for method in methods:
     print('-' * 100)
-    print(method)
+    
+    data = np.loadtxt('temp/BOXN/' + method + '/' + exp + '/records.dat')
+    print(f'Method: {method}  -  Exp: {exp}  -  Records: {data.shape[0]}')
 
-    data = np.loadtxt('tests\\data\\BOX\\' + method + '\\' + exp + '\\records.dat')
     train_set = data[:, 0]
     test_set = data[:, 1]
     train_best = train_set.min()

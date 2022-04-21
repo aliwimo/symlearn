@@ -108,11 +108,11 @@ class DFP:
     def rank(self, is_reversed=False):
         self.population, self.fitnesses = Methods.rank_trees(self.population, self.fitnesses, is_reversed)
     
-    def export_best(self, filename='Best'):
+    def export_best(self, export_path='images/', filename='Best'):
         if self.best_individual:
             label = "Best error: "
             label += str(round(self.best_individual.fitness, 3))
-            Methods.export_graph(self.best_individual, 'images\\' + filename, label)
+            Methods.export_graph(self.best_individual, export_path + filename, label)
             print(self.best_individual.equation())
 
     def attract(self, i, j):
@@ -126,9 +126,9 @@ class DFP:
             temp = Methods.share(self.population[j], deepcopy(self.population[i]))
             temp = Methods.change_node(temp, self.expressions + self.terminals)
         elif self.beta >= distance > self.alpha:
-            temp = Methods.share(self.population[j], deepcopy(self.population[i]))
-        else:
             temp = Methods.change_node(deepcopy(self.population[i]), self.expressions + self.terminals)
+        else:
+            temp = Methods.share(self.population[j], deepcopy(self.population[i]))
         return temp
 
     def evalualte(self, current, temp):

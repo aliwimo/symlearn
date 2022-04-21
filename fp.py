@@ -20,6 +20,7 @@ class FP:
                 max_time=None,
                 initial_min_depth=0,
                 initial_max_depth=6,
+                min_depth=1,
                 max_depth=15,
                 error_function=None,
                 expressions=[Add, Sub, Mul],
@@ -37,6 +38,7 @@ class FP:
         self.max_time = max_time
         self.initial_min_depth = initial_min_depth
         self.initial_max_depth = initial_max_depth
+        self.min_depth = min_depth
         self.max_depth = max_depth
         self.error_function = error_function
         self.expressions = expressions
@@ -59,7 +61,7 @@ class FP:
         self.get_initial_statistics()
         self.run()
         if self.verbose: 
-            print(f'Total time: {datetime.now() - self.start_time}')
+            if self.max_time: print(f'Total time: {datetime.now() - self.start_time}')
             print(f'Evaluations: {self.current_evaluation}')
 
     def score(self, y_test, y_pred):
@@ -103,11 +105,11 @@ class FP:
     def rank(self, is_reversed=False):
         self.population, self.fitnesses = Methods.rank_trees(self.population, self.fitnesses, is_reversed)
     
-    def export_best(self, filename='Best'):
+    def export_best(self, export_path='images/', filename='Best'):
         if self.best_individual:
             label = "Best error: "
             label += str(round(self.best_individual.fitness, 3))
-            Methods.export_graph(self.best_individual, 'images\\' + filename, label)
+            Methods.export_graph(self.best_individual, export_path + filename, label)
             print(self.best_individual.equation())
 
     def attract(self, i, j):
@@ -133,7 +135,7 @@ class FP:
                     if self.must_terminate(): break
                     if self.population[i].fitness >= self.population[j].fitness:
                         temp = self.attract(i, j)
-                        if temp.depth() > self.max_depth:
+                        if temp.depth() > self.max_depth or temp.depth() < self.min_depth:
                             if random() > 0.5:
                                 temp = Methods.generate_individual('full', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
                             else:
