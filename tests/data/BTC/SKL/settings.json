@@ -1,0 +1,9 @@
+{
+    "01": "model = MLPRegressor(max_iter=5000, hidden_layer_sizes=(4,))",
+    "02": "model = MLPRegressor(max_iter=5000, hidden_layer_sizes=(4, 4,))",
+    "03": "model = MLPRegressor(max_iter=5000, hidden_layer_sizes=(4, 4, 4,))",
+    "04": "tree.DecisionTreeRegressor()",
+    "05": "LinearRegression()",
+    "06": "KNeighborsRegressor(n_neighbors=2)",
+    "07": "make_pipeline(StandardScaler(), SVR(C=100.0, coef0=1.0, kernel='poly', max_iter=5000))"
+}
