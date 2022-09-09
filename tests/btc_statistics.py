@@ -1,13 +1,18 @@
 import numpy as np
 
 methods = ['FP', 'DFP']
-evals = '20'
+# methods = ['FP', 'DFP']
+# methods = ['FP']
+evals = '5000'
 
 for method in methods:
     print('-' * 100)
     print(method)
 
-    data = np.loadtxt('tests\\data\\BTC\\' + method + '\\' + evals + '\\records.dat')
+    # data = np.loadtxt('tests\\data\\BTC\\' + method + '\\' + evals + '\\records.dat')
+    data = np.loadtxt('temp/BTC/' + method + '/' + evals + '/records.dat')
+    print(f'Method: {method}  -  Evals: {evals}  -  Records: {data.shape[0]}')
+
     train_set = data[:, 2]
     test_set = data[:, 5]
     train_best = train_set.max()

@@ -141,6 +141,10 @@ class DFP:
                 if self.verbose:
                     print(f'Evaluations: {self.current_evaluation} | Fitness: {self.best_individual.fitness}')
 
+    def test_model(self, X):
+        return self.best_individual.output(X)
+
+
     # standard firefly programming method (FP)
     def run(self):
         while not self.must_terminate():
