@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import random, choice
 from parameters import Parameters
-from graphviz import Digraph, Source
+from graphviz import Digraph, Source # install version 0.16
 from node import Node
 from copy import deepcopy
 from functions import Constant
