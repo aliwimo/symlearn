@@ -126,7 +126,9 @@ class FP:
                     print(f'Evaluations: {self.current_evaluation} | Fitness: {self.best_individual.fitness}')
     
     def test_model(self, X):
-        return self.best_individual.output(X)
+        zero_array = np.zeros(X.shape)
+        x = np.vstack([zero_array, X])
+        return self.best_individual.output(x)[-1]
 
     # standard firefly programming method (FP)
     def run(self):
