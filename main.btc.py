@@ -26,18 +26,15 @@ from pathlib import Path
 
 np.seterr(all='ignore')
 
-# df = pd.read_csv('data/btc_usd.csv')
-df = pd.read_csv('data/BTC-USD2.csv')
+df = pd.read_csv('data/BTC-USD-2.csv')
 
 df['Date'] = pd.to_datetime(df['Date'])
 df['PastDay'] = df['Close'].shift(1)
-# df['PastDayHigh'] = df['High'].shift(1)
-# df['PastDayLow'] = df['Low'].shift(1)
 
-train_mask = (df['Date'] >= '2021-9-1') & (df['Date'] <= '2022-5-27')
+train_mask = (df['Date'] >= '2022-1-2') & (df['Date'] <= '2022-8-31')
 train_df = df.loc[train_mask]
 
-test_mask = (df['Date'] >= '2022-5-28') & (df['Date'] <= '2022-8-28')
+test_mask = (df['Date'] >= '2022-9-1') & (df['Date'] <= '2022-10-31')
 test_df = df.loc[test_mask]
 
 X_train = train_df[['PastDay', 'High', 'Low']]
