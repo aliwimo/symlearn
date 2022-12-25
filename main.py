@@ -1,86 +1,144 @@
+# import dependencies
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import explained_variance_score
+import matplotlib.pyplot as plt
 from parameters import Parameters
-from methods import Methods
 from functions import *
 from errors import *
-from random import random
+
+# import sklearn metrics and utilities 
+from sklearn.metrics import r2_score
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+# import sklearn models
+from sklearn.neural_network import MLPRegressor
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.svm import SVR
+from sklearn import tree
+
+# import custom models
 from fp import FP
 from dfp import DFP
+from ipa import IPA
 
+# supress numpy warnings
 np.seterr(all='ignore')
 
-point_num = 20
+# import dataset
+df = pd.read_csv('data/BTC-USD-2.csv')
 
-# f1
-X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
-y = X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
+# convert date column to date format
+df['Date'] = pd.to_datetime(df['Date'])
 
-# f2
-# X = np.linspace(-1, 1, num=point_num).reshape(point_num, 1)
-# y = X[:, 0]**5 + X[:, 0]**4 + X[:, 0]**3 + X[:, 0]**2 + X[:, 0]
+# split dataset into training and test subsets
+train_mask = (df['Date'] >= '2022-1-2') & (df['Date'] <= '2022-8-31')
+train_df = df.loc[train_mask]
+test_mask = (df['Date'] >= '2022-9-1') & (df['Date'] <= '2022-10-31')
+test_df = df.loc[test_mask]
 
-# f3
-# X = np.linspace(0, 1, num=point_num).reshape(point_num, 1)
-# y = np.sin(X[:, 0]) + np.sin(X[:, 0] + X[:, 0]**2)
+# split each of training and test subsets into inputs (X) and outputs (Y)
+X_train = train_df[['Open', 'High', 'Low']]
+y_train = train_df['Close']
+date_train = train_df['Date']
+X_test = test_df[['Open', 'High', 'Low']]
+y_test = test_df['Close']
+date_test = test_df['Date']
 
-# f4
-# X = np.linspace(0, np.pi/2, num=point_num).reshape(point_num, 1)
-# y = np.sin(X[:, 0]**2) * np.cos(X[:, 0]) - 1
+# convert dataframes to numpy objects
+X_train = X_train.to_numpy()
+y_train = y_train.to_numpy()
+X_test = X_test.to_numpy()
+y_test = y_test.to_numpy()
 
-# f5
-# X = np.linspace(0, 2, num=point_num).reshape(point_num, 1)
-# y = np.log(X[:, 0] + 1) + np.log((X[:, 0]**2) + 1)
-
-# f6
-# X = np.linspace(0, 4, num=point_num).reshape(point_num, 1)
-# y = np.sqrt(X[:, 0])
-
-# f7
-# X = np.linspace((0, 0), (1, 1), num=point_num).reshape(point_num, 2)
-# y = np.sin(X[:, 0]) + np.sin(X[:, 1] ** 2)
-
-# f8
-# X = np.linspace((0, 0), (1, 1), num=point_num).reshape(point_num, 2)
-# y = 2 * np.sin(X[:, 0]) * np.cos(X[:, 1])
-
-# split dataset into training and testing datasets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
-
-Parameters.CONSTANTS = [1, 2]
-Parameters.FEATURES = X.shape[1]
-Parameters.CONSTANTS_TYPE = 'integer'
-expressions = [Add, Sub, Mul, Div, Sin, Cos, Rlog, Exp]
-# expressions = [Add, Sub, Mul, Div]
+# set global parameters
+Parameters.CONSTANTS = [-5, 5]
+Parameters.FEATURES = X_train.shape[1]
+Parameters.CONSTANTS_TYPE = 'range'
+expressions = [Add, Sub, Mul]
 terminals = [Variable, Constant]
 
-model = DFP(pop_size=50,
-        alpha=0.1,
-        beta=0.5,
-        gamma=1.0,
-        max_evaluations=2000,
-        initial_min_depth=0,
-        initial_max_depth=6,
-        max_depth=15,
-        error_function=SOD,
-        expressions=expressions,
-        terminals=terminals,
-        target_error=1e-5,
-        verbose=True
-        )
 
+# choose a model to train
+
+# model = FP(pop_size=50,
+#         max_evaluations=5000,
+#         initial_min_depth=0,
+#         initial_max_depth=6,
+#         min_depth=1,
+#         max_depth=15,
+#         error_function=IR2,
+#         expressions=expressions,
+#         terminals=terminals,
+#         target_error=0,
+#         verbose=True
+#         )
+
+# model = DFP(pop_size=50,
+#         alpha=0.01,
+#         beta=0.05,
+#         gamma=0.1,
+#         max_evaluations=5000,
+#         initial_min_depth=0,
+#         initial_max_depth=6,
+#         min_depth=1,
+#         max_depth=15,
+#         error_function=IR2,
+#         expressions=expressions,
+#         terminals=terminals,
+#         target_error=0,
+#         verbose=True
+#         )
+
+model = IPA(pop_size=100,
+            donors_number=3,
+            receivers_number=3,
+            max_evaluations=10000,
+            initial_min_depth=0,
+            initial_max_depth=6,
+            min_depth=1,
+            max_depth=15,
+            error_function=IR2,
+            expressions=expressions,
+            terminals=terminals,
+            target_error=0,
+            verbose=True
+            )
+
+
+# model = MLPRegressor(max_iter=5000, hidden_layer_sizes=(4, 4, 4, ))
+# model = tree.DecisionTreeRegressor()
+# model = LinearRegression()
+# model = KNeighborsRegressor(n_neighbors=2)
+# model = make_pipeline(StandardScaler(), SVR(C=100.0, coef0=1.0, kernel='poly', max_iter=5000))
+
+# fit data into model
 model.fit(X_train, y_train)
-y_fitted = model.predict(X_train)
+y_fit = model.predict(X_train)
 y_pred = model.predict(X_test)
 
-model.export_best()
+# print results of the model
+print('Training set r2 score: {}\nTest set r2 score: {}'.format(
+    r2_score(y_train, y_fit),
+    r2_score(y_test, y_pred)
+))
 
-Methods.plot(x_axis_train=X_train[:, 0],
-            y_axis_train=y_train,
-            y_axis_fitted=y_fitted,
-            x_axis_test=X_test[:, 0],
-            y_axis_test=y_test,
-            y_axis_pred=y_pred,
-            test_set=True)
+# plot model graph
+plt.clf()
+ax = plt.axes()
+ax.grid(linestyle=':', linewidth=0.5, alpha=1, zorder=1)
+plt.ylabel("BTC Price ($)")
+line = [None, None, None, None]
+line[0], = ax.plot(date_train, y_train, linestyle=':',
+                   color='black', linewidth=0.7, zorder=2, label='Targeted')
+line[1], = ax.plot(date_train, y_fit, linestyle='-',
+                   color='red', linewidth=0.7, zorder=3, label='Trained')
+line[2], = ax.plot(date_test, y_test, linestyle=':',
+                   color='black', linewidth=0.7, zorder=2)
+line[3], = ax.plot(date_test, y_pred, linestyle='-',
+                   color='blue', linewidth=0.7, zorder=3, label='Predicted')
+plt.axvline(x=date_test.iloc[0], linestyle='-', color='black', linewidth='1')
+plt.draw()
+plt.legend()
+plt.show()
