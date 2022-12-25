@@ -27,7 +27,7 @@ from ipa import IPA
 np.seterr(all='ignore')
 
 # import dataset
-df = pd.read_csv('data/BTC-USD-2.csv')
+df = pd.read_csv('datasets/btc-usd.csv')
 
 # convert date column to date format
 df['Date'] = pd.to_datetime(df['Date'])
