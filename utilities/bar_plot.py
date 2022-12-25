@@ -20,19 +20,12 @@ plt.ylim([0, 100])
 gap = 0.10
 width = 0.10
 
-# ax.bar(X - gap, y1, color='black', width=width, zorder=10, label='FP')
-# ax.bar(X - gap, y1, hatch='////', edgecolor='black', color='blak', width=width, zorder=10, label='FP')
 ax.bar(X - gap, y1, color='gray', width=width, zorder=10, label='FP')
 ax.bar(X + gap, y2, color='black', width=width, zorder=12, label='DFP')
 
 for i, x in enumerate(X):
-    # ax.text(X[i] - (gap/2 + width/3), y1[i] + 1, str(y1[i]), horizontalalignment='center', color='black')
     ax.text(X[i] - (gap/2 + width/2), y1[i] + 2, str(y1[i]), horizontalalignment='center', color='black')
     ax.text(X[i] + (gap/2 + width/2), y2[i] + 2, str(y2[i]), horizontalalignment='center', color='black')
-
-# ax.bar(X + 0.00, data[0], color = 'b', width = 0.25)
-# ax.bar(X + 0.25, data[1], color = 'g', width = 0.25)
-# ax.bar(X + 0.50, data[2], color = 'r', width = 0.25)
 
 ax.set_xticklabels(functions)
 

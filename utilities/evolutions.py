@@ -47,13 +47,10 @@ plt.xlabel("Evaluations")
 plt.ylabel("Error Value")
 plt.xlim([0, 25000])
 plt.ylim([0, 10])
-# plt.ylim([0, max(max(dfp_fit), max(fp_fit))])
 
 line = [None, None]
 line[0], = ax.plot(evaluations, fp_fit, linestyle='-', color='b', marker='v', markeredgecolor='b', markersize=5, markerfacecolor='w', linewidth=1, zorder=2, label='FP')
 line[1], = ax.plot(evaluations, dfp_fit, linestyle='-', color='r', marker='o', markeredgecolor='r', markersize=5, markerfacecolor='w', linewidth=1, zorder=2, label='DFP')
-# line[0], = ax.plot(evaluations, fp_fit, linestyle='-', color='blue', markerfacecolor='white', linewidth=1, zorder=2, label='FP')
-# line[1], = ax.plot(evaluations, dfp_fit, linestyle='-', color='red', markerfacecolor='white', linewidth=1, zorder=2, label='DFP')
 
 plt.draw()
 plt.legend()
