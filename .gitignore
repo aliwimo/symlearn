@@ -8,5 +8,4 @@ images/
 **/**/graphs
 **/**/*backup*
 temp/
-utilities/
 *.sav
