@@ -2,10 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from random import random, choice
 from parameters import Parameters
-from graphviz import Digraph, Source # install version 0.16
+from graphviz import Digraph, Source  # install version 0.16
 from node import Node
 from copy import deepcopy
 from functions import Constant
+
 
 class Methods:
 
@@ -14,11 +15,13 @@ class Methods:
         population = []
         # generate with full method
         for _ in range(pop_size // 2):
-            individual = cls.generate_individual('full', initial_min_depth, initial_max_depth, expressions, terminals)
+            individual = cls.generate_individual(
+                'full', initial_min_depth, initial_max_depth, expressions, terminals)
             population.append(individual)
         # generate with grow method
         for _ in range((pop_size // 2), pop_size):
-            individual = cls.generate_individual('grow', initial_min_depth, initial_max_depth, expressions, terminals)
+            individual = cls.generate_individual(
+                'grow', initial_min_depth, initial_max_depth, expressions, terminals)
             population.append(individual)
         return population
 
@@ -47,19 +50,22 @@ class Methods:
                 node = choice(terminals)()
         # create left and right branches
         if node.inputs == 2:
-            child_1 = cls.generate_individual(method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
-            child_2 = cls.generate_individual(method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
+            child_1 = cls.generate_individual(
+                method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
+            child_2 = cls.generate_individual(
+                method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
             node.add_left_node(child_1)
             node.add_right_node(child_2)
         elif node.inputs == 1:
-            child = cls.generate_individual(method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
+            child = cls.generate_individual(
+                method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
             node.add_right_node(child)
         return node
 
     @classmethod
     def share(cls, source: Node, target: Node):
         source_nodes = source.sub_nodes()
-        
+
         if len(source_nodes) > 1:
             if random() < 0.9:
                 is_function = False
@@ -109,11 +115,12 @@ class Methods:
         elif selected_node.inputs == 1:
             new_node.add_right_node(deepcopy(selected_node.right))
         return source
-    
+
     @classmethod
     def rank_trees(cls, trees, fitnesses, is_reversed=False):
         sorted_indices = np.argsort(fitnesses)
-        if not is_reversed: sorted_indices = np.flip(sorted_indices)
+        if not is_reversed:
+            sorted_indices = np.flip(sorted_indices)
         fitnesses.sort(reverse=not is_reversed)
         temp_trees = trees.copy()
         for (m, n) in zip(range(len(trees)), sorted_indices):
@@ -123,9 +130,10 @@ class Methods:
     @classmethod
     def export_graph(cls, root: Node, file_name, label):
         graph = [Digraph()]
-        graph[0].attr(kw = 'graph', label = label)
+        graph[0].attr(kw='graph', label=label)
         cls.draw_node(graph, root)
-        Source(graph[0], filename = file_name + '.gv', format=Parameters.EXPORT_EXT).render()
+        Source(graph[0], filename=file_name + '.gv',
+               format=Parameters.EXPORT_EXT).render()
 
     @classmethod
     def draw_node(cls, graph, root: Node):
@@ -137,13 +145,15 @@ class Methods:
             graph[0].edge(str(root.id), str(root.right.id))
             cls.draw_node(graph, root.right)
 
-
     @classmethod
     def simplify(cls, root: Node):
         has_variables = False
-        if root.type == 'variable': has_variables = True
-        if root.left: has_variables = cls.simplify(root.left)
-        if root.right: has_variables = cls.simplify(root.right)
+        if root.type == 'variable':
+            has_variables = True
+        if root.left:
+            has_variables = cls.simplify(root.left)
+        if root.right:
+            has_variables = cls.simplify(root.right)
         if not has_variables:
             result = root.output(np.array([[1]]))
             new_node = Constant()
@@ -158,8 +168,6 @@ class Methods:
                     parent.remove_right_node(root)
                     parent.add_right_node(new_node)
         return has_variables
-        
-
 
     @classmethod
     def plot(cls, x_axis_train, y_axis_train, y_axis_fitted, x_axis_test=None, y_axis_test=None, y_axis_pred=None, test_set=False):
@@ -170,24 +178,22 @@ class Methods:
             y_axis_train = np.append(y_axis_train, y_axis_test[0])
             y_axis_fitted = np.append(y_axis_fitted, y_axis_pred[0])
 
-        # preparing plot
         ax = plt.axes()
-        # showing grid 
         ax.grid(linestyle=':', linewidth=1, alpha=1, zorder=1)
-        # set the Label of X and Y axis
         plt.xlabel("X")
         plt.ylabel("Y")
-        # for markers and colors look ar the end of this file
         line = [None, None, None, None]
-        line[0], = ax.plot(x_axis_train, y_axis_train, linestyle='-', color='black', linewidth=0.7, zorder=2, label='Targeted')    
-        line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='red', marker='o', markersize=3, markerfacecolor='white', linewidth=0.7, zorder=3, label='Generated')
-        # line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='black', linewidth=0.7, zorder=3, label='Generated')
+        line[0], = ax.plot(x_axis_train, y_axis_train, linestyle='-',
+                           color='black', linewidth=0.7, zorder=2, label='Targeted')
+        line[1], = ax.plot(x_axis_train, y_axis_fitted, linestyle=':', color='red', marker='o',
+                           markersize=3, markerfacecolor='white', linewidth=0.7, zorder=3, label='Generated')
         if test_set:
-            line[2], = ax.plot(x_axis_test, y_axis_test, linestyle='-', color='black', linewidth=0.5, zorder=2)
-            line[3], = ax.plot(x_axis_test, y_axis_pred, linestyle=':', color='blue', marker='o', markerfacecolor='white', markersize=3, linewidth=0.7, zorder=3, label='Generated')
-            # line[3], = ax.plot(x_axis_test, y_axis_pred, linestyle=':' ,color='black', linewidth=0.7, zorder=3)
-            plt.axvline(x=x_axis_test[0], linestyle='-', color='black', linewidth='1')
-        # show graphes
+            line[2], = ax.plot(x_axis_test, y_axis_test, linestyle='-',
+                               color='black', linewidth=0.5, zorder=2)
+            line[3], = ax.plot(x_axis_test, y_axis_pred, linestyle=':', color='blue', marker='o',
+                               markerfacecolor='white', markersize=3, linewidth=0.7, zorder=3, label='Generated')
+            plt.axvline(x=x_axis_test[0], linestyle='-',
+                        color='black', linewidth='1')
         plt.draw()
         plt.legend()
         plt.show()
