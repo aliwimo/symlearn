@@ -12,9 +12,6 @@ class FP:
 
     def __init__(self,
                 pop_size=100,
-                alpha=0.1, 
-                beta=0.5, 
-                gamma=1.5,
                 max_evaluations=10000,
                 max_generations=-1,
                 max_time=None,
@@ -30,9 +27,6 @@ class FP:
                 ):
 
         self.pop_size = pop_size
-        self.alpha = alpha
-        self.beta = beta
-        self.gamma = gamma
         self.max_evaluations = max_evaluations
         self.max_generations = max_generations
         self.max_time = max_time
