@@ -37,24 +37,30 @@ class Node:
 
     def equation(self):
         equation = "("
-        if self.left: equation += self.left.equation()
+        if self.left:
+            equation += self.left.equation()
         equation += str(self)
-        if self.right: equation += self.right.equation()
+        if self.right:
+            equation += self.right.equation()
         equation += ")"
         return equation
 
     def sub_nodes(self):
         nodes = []
         nodes.append(self)
-        if self.left: nodes = nodes + self.left.sub_nodes()
-        if self.right: nodes = nodes + self.right.sub_nodes()
+        if self.left:
+            nodes = nodes + self.left.sub_nodes()
+        if self.right:
+            nodes = nodes + self.right.sub_nodes()
         return nodes
 
     def sub_tree(self):
         subtree = deepcopy(self)
         subtree.update_id()
-        if self.left: self.left.update_id()
-        if self.right: self.right.update_id()
+        if self.left:
+            self.left.update_id()
+        if self.right:
+            self.right.update_id()
         return subtree
 
     def update_id(self):
@@ -64,7 +70,8 @@ class Node:
     def depth(self):
         depth_left = 0
         depth_right = 0
-        if self.left: depth_left = self.left.depth()
-        if self.right: depth_right = self.right.depth()
+        if self.left:
+            depth_left = self.left.depth()
+        if self.right:
+            depth_right = self.right.depth()
         return max(depth_left, depth_right) + 1
-        
