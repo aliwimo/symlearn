@@ -1,7 +1,7 @@
 import numpy as np
 from random import uniform
-from node import Node
-from parameters import Parameters
+from core.node import Node
+from core.parameters import Parameters
 
 class Add(Node):
     def __init__(self):

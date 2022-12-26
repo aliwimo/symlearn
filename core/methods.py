@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from random import random, choice
-from parameters import Parameters
 from graphviz import Digraph, Source  # install version 0.16
-from node import Node
 from copy import deepcopy
-from functions import Constant
+from core.parameters import Parameters
+from core.node import Node
+from core.functions import Constant
 
 
 class Methods:

@@ -25,7 +25,3 @@ def MAE(Y, y):
 # Inverse of R2 Score
 def IR2(Y, y):
     return 1 - r2_score(Y, y)
-    # Y_bar = Y.mean()
-    # ss_tot = ((Y-Y_bar)**2).sum()
-    # ss_res = ((Y-y)**2).sum()
-    # return 1 - (ss_res/ss_tot)

@@ -1,17 +1,18 @@
 import numpy as np
 from copy import deepcopy
 from random import random
-from node import Node
-from parameters import Parameters
-from methods import Methods
-from functions import *
 from sklearn.metrics import r2_score
 from datetime import datetime, timedelta
+from core.methods import Methods
+from core.functions import *
 
-class FP:
+class DFFP:
 
     def __init__(self,
                 pop_size=100,
+                alpha=0.1, 
+                beta=0.5, 
+                gamma=1.5,
                 max_evaluations=10000,
                 max_generations=-1,
                 max_time=None,
@@ -27,6 +28,9 @@ class FP:
                 ):
 
         self.pop_size = pop_size
+        self.alpha = alpha
+        self.beta = beta
+        self.gamma = gamma
         self.max_evaluations = max_evaluations
         self.max_generations = max_generations
         self.max_time = max_time
@@ -71,6 +75,9 @@ class FP:
                             initial_max_depth=self.initial_max_depth,
                             expressions=self.expressions,
                             terminals=self.terminals)
+        for i in self.population:
+            Methods.simplify(i)
+
 
     def get_initial_statistics(self):
         self.fitnesses = [0] * self.pop_size
@@ -107,7 +114,20 @@ class FP:
             print(self.best_individual.equation())
 
     def attract(self, i, j):
-        return Methods.share(self.population[j], deepcopy(self.population[i]))
+        distance = np.abs(self.population[i].fitness - self.population[j].fitness)
+
+        if distance > self.gamma:
+            for _ in range(2):
+                temp = Methods.share(self.population[j], deepcopy(self.population[i]))
+            temp = Methods.change_node(temp, self.expressions + self.terminals)
+        elif self.gamma >= distance > self.beta:
+            temp = Methods.share(self.population[j], deepcopy(self.population[i]))
+            temp = Methods.change_node(temp, self.expressions + self.terminals)
+        elif self.beta >= distance > self.alpha:
+            temp = Methods.change_node(deepcopy(self.population[i]), self.expressions + self.terminals)
+        else:
+            temp = Methods.share(self.population[j], deepcopy(self.population[i]))
+        return temp
 
     def evalualte(self, current, temp):
         temp.update_fitness(self.error_function, self.X, self.y)
@@ -118,11 +138,12 @@ class FP:
                 self.best_individual = deepcopy(self.population[current])
                 if self.verbose:
                     print(f'Evaluations: {self.current_evaluation} | Fitness: {self.best_individual.fitness}')
-    
+
     def test_model(self, X):
         zero_array = np.zeros(X.shape)
         x = np.vstack([zero_array, X])
         return self.best_individual.output(x)[-1]
+
 
     # standard firefly programming method (FP)
     def run(self):
@@ -134,6 +155,7 @@ class FP:
                     if self.must_terminate(): break
                     if self.population[i].fitness >= self.population[j].fitness:
                         temp = self.attract(i, j)
+                        Methods.simplify(temp)
                         if temp.depth() > self.max_depth or temp.depth() < self.min_depth:
                             if random() > 0.5:
                                 temp = Methods.generate_individual('full', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)

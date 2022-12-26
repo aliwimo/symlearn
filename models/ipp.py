@@ -1,14 +1,12 @@
 import numpy as np
 from copy import deepcopy
 from random import random
-from node import Node
-from parameters import Parameters
-from methods import Methods
-from functions import *
 from sklearn.metrics import r2_score
 from datetime import datetime, timedelta
+from core.methods import Methods
+from core.functions import *
 
-class IPA:
+class IPP:
 
     def __init__(self,
                 pop_size=100,
