@@ -1,27 +1,74 @@
+"""Error metrics used in evaluation process.
+
+The :mod:`errors` module contains a set of different error metrics
+that is used for evaluating programmes during optimzation process.
+"""
 import numpy as np
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 
-# Sum Of Difference
-def SOD(Y, y):
-    return np.sum(np.abs(Y - y))
 
-# Mean Square Error
-def MSE(Y, y):
-    # return mean_squared_error(Y, y)
-    return ((Y - y)**2).mean(axis=0)
+def SOD(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+    """Sum of difference error metric
 
-# Root Mean Square Error
-def RMSE(Y, y):
-    return mean_squared_error(Y, y, squared=False)
-    # return np.sqrt(((Y - y)**2).mean(axis=0))
+    Args:
+        y_pred (np.ndarray): Predicted output values array
+        y_true (np.ndarray): Real output values array
 
-# Mean Absolute Error
-def MAE(Y, y):
-    # return mean_absolute_error(Y, y)
-    return np.sum(np.abs(Y - y)) / Y.shape[0]
+    Returns:
+        The value of the metric
+    """
+    return np.sum(np.abs(y_pred - y_true))
 
-# Inverse of R2 Score
-def IR2(Y, y):
-    return 1 - r2_score(Y, y)
+
+def MSE(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+    """Mean square error metric
+
+    Args:
+        y_pred (np.ndarray): Predicted output values array
+        y_true (np.ndarray): Real output values array
+
+    Returns:
+        The value of the metric
+    """
+    return mean_squared_error(y_true, y_pred)
+
+
+def RMSE(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+    """Root mean square error metric
+
+    Args:
+        y_pred (np.ndarray): Predicted output values array
+        y_true (np.ndarray): Real output values array
+
+    Returns:
+        The value of the metric
+    """
+    return mean_squared_error(y_true, y_pred, squared=False)
+
+
+def MAE(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+    """Mean absolute error metric
+
+    Args:
+        y_pred (np.ndarray): Predicted output values array
+        y_true (np.ndarray): Real output values array
+
+    Returns:
+        The value of the metric
+    """
+    return mean_absolute_error(y_true, y_pred)
+
+
+def IR2(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+    """Inverse of r2 Score metric
+
+    Args:
+        y_pred (np.ndarray): Predicted output values array
+        y_true (np.ndarray): Real output values array
+
+    Returns:
+        The value of the metric
+    """
+    return 1 - r2_score(y_true, y_pred)
