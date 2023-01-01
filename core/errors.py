@@ -9,7 +9,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import r2_score
 
 
-def SOD(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+def sum_of_difference(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     """Sum of difference error metric
 
     Args:
@@ -22,7 +22,7 @@ def SOD(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     return np.sum(np.abs(y_pred - y_true))
 
 
-def MSE(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+def mean_squared_error_c(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     """Mean square error metric
 
     Args:
@@ -35,7 +35,7 @@ def MSE(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     return mean_squared_error(y_true, y_pred)
 
 
-def RMSE(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+def root_mean_squared_error(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     """Root mean square error metric
 
     Args:
@@ -48,7 +48,7 @@ def RMSE(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     return mean_squared_error(y_true, y_pred, squared=False)
 
 
-def MAE(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+def mean_absolute_error_c(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     """Mean absolute error metric
 
     Args:
@@ -61,7 +61,7 @@ def MAE(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     return mean_absolute_error(y_true, y_pred)
 
 
-def IR2(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+def r2_score_inverse(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     """Inverse of r2 Score metric
 
     Args:
