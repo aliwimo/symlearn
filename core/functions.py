@@ -1,3 +1,9 @@
+"""Functions used in evaluation process.
+
+The :mod:`functions` module contains a set of different functions that is 
+used for in building programs.
+"""
+
 import numpy as np
 from random import uniform
 from core.node import Node
