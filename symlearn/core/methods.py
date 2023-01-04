@@ -9,9 +9,9 @@ from copy import deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
 from graphviz import Digraph, Source  # install version 0.16
-from core.parameters import Parameters
-from core.node import Node
-from core.functions import Constant
+from symlearn.core.parameters import Parameters
+from symlearn.core.node import Node
+from symlearn.core.functions import Constant
 
 
 class Methods:

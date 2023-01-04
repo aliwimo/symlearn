@@ -2,9 +2,9 @@ import numpy as np
 from copy import deepcopy
 from random import random
 from datetime import datetime, timedelta
-from core.methods import Methods
-from core.functions import *
-from models.model import Model
+from symlearn.core.methods import Methods
+from symlearn.core.functions import *
+from symlearn.models.model import Model
 
 
 class IPP(Model):
