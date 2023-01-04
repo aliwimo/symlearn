@@ -19,14 +19,14 @@ from sklearn.svm import SVR
 from sklearn import tree
 
 # import core dependicies
-from core.parameters import Parameters
-from core.functions import *
-from core.errors import *
+from symlearn.core.parameters import Parameters
+from symlearn.core.functions import *
+from symlearn.core.errors import *
 
 # import models
-from models.ffp import FFP
-from models.dffp import DFFP
-from models.ipp import IPP
+from symlearn.models import FFP
+from symlearn.models import DFFP
+from symlearn.models import IPP
 
 # supress numpy warnings
 np.seterr(all='ignore')
@@ -66,7 +66,6 @@ terminals = [Variable, Constant]
 
 
 # choose a model to train
-
 # model = MLPRegressor(max_iter=5000, hidden_layer_sizes=(4, 4, 4, ))
 # model = tree.DecisionTreeRegressor()
 # model = LinearRegression()

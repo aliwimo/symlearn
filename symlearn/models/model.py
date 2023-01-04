@@ -1,6 +1,6 @@
 import numpy as np
 from datetime import datetime
-from core.methods import Methods
+from symlearn.core.methods import Methods
 from sklearn.metrics import r2_score
 
 class Model:

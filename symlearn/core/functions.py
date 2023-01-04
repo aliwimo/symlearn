@@ -6,8 +6,8 @@ used for in building programs.
 
 import numpy as np
 from random import uniform
-from core.node import Node
-from core.parameters import Parameters
+from symlearn.core.node import Node
+from symlearn.core.parameters import Parameters
 
 class Add(Node):
     """Addtion function.
