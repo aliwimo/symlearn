@@ -1,7 +1,7 @@
 """Global parameters.
 
 The :mod:`parameters` module contains a set of different global parameters that is 
-used whıle solvıng problems.
+used while solving problems.
 """
 
 class Parameters:
