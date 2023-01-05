@@ -15,7 +15,7 @@ class Node:
         __id (int): Global id identifier.
         fitness (float): Current node tree's fitness value.
         parent (Node): Current node's parent (if found).
-        inputs (int): Arity or the number of arguments or operands.
+        arity (int): Arity or the number of arguments or operands.
         left (Node): Node's left child.
         right (Node): Node's right child.
         id (int): Current node's id identifier.
@@ -28,7 +28,7 @@ class Node:
         """initializing method."""
         self.fitness = np.inf
         self.parent = None
-        self.inputs = 0
+        self.arity = 0
         self.left = None
         self.right = None
         self.id = Node.__id

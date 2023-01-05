@@ -97,14 +97,14 @@ class Methods:
             else:
                 node = choice(terminals)()
         # create left and right branches
-        if node.inputs == 2:
+        if node.arity == 2:
             child_1 = cls.generate_individual(
                 method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
             child_2 = cls.generate_individual(
                 method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
             node.add_left_node(child_1)
             node.add_right_node(child_2)
-        elif node.inputs == 1:
+        elif node.arity == 1:
             child = cls.generate_individual(
                 method, initial_min_depth, initial_max_depth, expressions, terminals, current_depth + 1)
             node.add_right_node(child)
@@ -131,7 +131,7 @@ class Methods:
                 is_function = False
                 while not is_function:
                     instance_node = choice(source_nodes).sub_tree()
-                    if instance_node.inputs >= 1:
+                    if instance_node.arity >= 1:
                         is_function = True
             else:
                 instance_node = choice(source_nodes).sub_tree()
@@ -167,11 +167,11 @@ class Methods:
         """
         source_nodes = source.sub_nodes()
         selected_node = choice(source_nodes)
-        same_inputs = False
-        while not same_inputs:
+        same_arity = False
+        while not same_arity:
             new_node = choice(nodes_pool)()
-            if new_node.inputs == selected_node.inputs:
-                same_inputs = True
+            if new_node.arity == selected_node.arity:
+                same_arity = True
         parent = selected_node.parent
         if parent:
             if selected_node.parent.left == selected_node:
@@ -181,10 +181,10 @@ class Methods:
                 parent.remove_right_node(selected_node)
                 parent.add_right_node(new_node)
 
-        if selected_node.inputs == 2:
+        if selected_node.arity == 2:
             new_node.add_left_node(deepcopy(selected_node.left))
             new_node.add_right_node(deepcopy(selected_node.right))
-        elif selected_node.inputs == 1:
+        elif selected_node.arity == 1:
             new_node.add_right_node(deepcopy(selected_node.right))
         return source
 
