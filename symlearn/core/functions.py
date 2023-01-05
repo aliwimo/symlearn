@@ -19,7 +19,7 @@ class Add(Node):
     def __init__(self):
         """initializing method."""
         super(Add, self).__init__()
-        self.inputs = 2
+        self.arity = 2
         self.type = 'expression'
 
     def __repr__(self):
@@ -49,7 +49,7 @@ class Sub(Node):
     def __init__(self):
         """initializing method."""
         super(Sub, self).__init__()
-        self.inputs = 2
+        self.arity = 2
         self.type = 'expression'
 
     def __repr__(self):
@@ -79,7 +79,7 @@ class Mul(Node):
     def __init__(self):
         """initializing method."""
         super(Mul, self).__init__()
-        self.inputs = 2
+        self.arity = 2
         self.type = 'expression'
     
     def __repr__(self):
@@ -109,7 +109,7 @@ class Div(Node):
     def __init__(self):
         """initializing method."""
         super(Div, self).__init__()
-        self.inputs = 2
+        self.arity = 2
         self.type = 'expression'
     
     def __repr__(self):
@@ -141,7 +141,7 @@ class Sin(Node):
     def __init__(self):
         """initializing method."""
         super(Sin, self).__init__()
-        self.inputs = 1
+        self.arity = 1
         self.type = 'expression'
     
     def __repr__(self):
@@ -170,7 +170,7 @@ class Cos(Node):
     def __init__(self):
         """initializing method."""
         super(Cos, self).__init__()
-        self.inputs = 1
+        self.arity = 1
         self.type = 'expression'
     
     def __repr__(self):
@@ -203,7 +203,7 @@ class Rlog(Node):
     def __init__(self):
         """initializing method."""
         super(Rlog, self).__init__()
-        self.inputs = 1
+        self.arity = 1
         self.type = 'expression'
     
     def __repr__(self):
@@ -235,7 +235,7 @@ class Pow(Node):
     def __init__(self):
         """initializing method."""
         super(Pow, self).__init__()
-        self.inputs = 2
+        self.arity = 2
         self.type = 'expression'
     
     def __repr__(self):
@@ -266,7 +266,7 @@ class Exp(Node):
     def __init__(self):
         """initializing method."""
         super(Exp, self).__init__()
-        self.inputs = 1
+        self.arity = 1
         self.type = 'expression'
     
     def __repr__(self):
@@ -296,7 +296,7 @@ class Variable(Node):
     def __init__(self):
         """initializing method."""
         super(Variable, self).__init__()
-        self.inputs = 0
+        self.arity = 0
         self.type = 'variable'
         self.rank = np.random.randint(low=0, high=Parameters.FEATURES)
 
@@ -329,7 +329,7 @@ class Constant(Node):
     def __init__(self):
         """initializing method."""
         super(Constant, self).__init__()
-        self.inputs = 0
+        self.arity = 0
         self.type = 'terminal'
         if Parameters.CONSTANTS_TYPE == 'integer':
             self.value = np.random.randint(low=Parameters.CONSTANTS[0], high=Parameters.CONSTANTS[1])
