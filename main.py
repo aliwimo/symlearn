@@ -24,9 +24,7 @@ from symlearn.core.functions import *
 from symlearn.core.errors import *
 
 # import models
-from symlearn.models import FFP
-from symlearn.models import DFFP
-from symlearn.models import IPP
+from symlearn.models import FFP, DFFP, IPP
 
 # supress numpy warnings
 np.seterr(all='ignore')
@@ -96,60 +94,60 @@ train_score = r2_score(y_train, y_fit)
 test_score = r2_score(y_test, y_pred)
 print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
 
-# print("\nDFFP")
-# model = DFFP(pop_size=50,
-#         alpha=0.01,
-#         beta=0.05,
-#         gamma=0.1,
-#         max_evaluations=5000,
-#         initial_min_depth=0,
-#         initial_max_depth=6,
-#         min_depth=1,
-#         max_depth=15,
-#         error_function=IR2,
-#         expressions=expressions,
-#         terminals=terminals,
-#         target_error=0,
-#         verbose=False
-#         )
+print("\nDFFP")
+model = DFFP(pop_size=50,
+        alpha=0.01,
+        beta=0.05,
+        gamma=0.1,
+        max_evaluations=5000,
+        initial_min_depth=0,
+        initial_max_depth=6,
+        min_depth=1,
+        max_depth=15,
+        error_function=r2_score_inverse,
+        expressions=expressions,
+        terminals=terminals,
+        target_error=0,
+        verbose=False
+        )
 
-# # fit data into model
-# model.fit(X_train, y_train)
-# y_fit = model.predict(X_train)
-# y_pred = model.predict(X_test)
+# fit data into model
+model.fit(X_train, y_train)
+y_fit = model.predict(X_train)
+y_pred = model.predict(X_test)
 
-# # print results of the model
-# print('Training set r2 score: {}\nTest set r2 score: {}'.format(
-#     r2_score(y_train, y_fit),
-#     r2_score(y_test, y_pred)
-# ))
+# print results of the model
+print('Training set r2 score: {}\nTest set r2 score: {}'.format(
+    r2_score(y_train, y_fit),
+    r2_score(y_test, y_pred)
+))
 
-# print("\nIPP")
-# model = IPP(pop_size=100,
-#             donors_number=3,
-#             receivers_number=3,
-#             max_evaluations=2500,
-#             initial_min_depth=0,
-#             initial_max_depth=6,
-#             min_depth=1,
-#             max_depth=15,
-#             error_function=IR2,
-#             expressions=expressions,
-#             terminals=terminals,
-#             target_error=0,
-#             verbose=False
-#             )
+print("\nIPP")
+model = IPP(pop_size=100,
+            donors_number=3,
+            receivers_number=3,
+            max_evaluations=2500,
+            initial_min_depth=0,
+            initial_max_depth=6,
+            min_depth=1,
+            max_depth=15,
+            error_function=r2_score_inverse,
+            expressions=expressions,
+            terminals=terminals,
+            target_error=0,
+            verbose=False
+            )
 
-# # fit data into model
-# model.fit(X_train, y_train)
-# y_fit = model.predict(X_train)
-# y_pred = model.predict(X_test)
+# fit data into model
+model.fit(X_train, y_train)
+y_fit = model.predict(X_train)
+y_pred = model.predict(X_test)
 
-# # print results of the model
-# print('Training set r2 score: {}\nTest set r2 score: {}'.format(
-#     r2_score(y_train, y_fit),
-#     r2_score(y_test, y_pred)
-# ))
+# print results of the model
+print('Training set r2 score: {}\nTest set r2 score: {}'.format(
+    r2_score(y_train, y_fit),
+    r2_score(y_test, y_pred)
+))
 
 # # plot model graph
 # plt.clf()
