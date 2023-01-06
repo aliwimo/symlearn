@@ -8,6 +8,10 @@ from symlearn.models.model import Model
 
 
 class DFFP(Model):
+    """
+    A class for that represents Difference-based Firefly Programming (DFFP) algorithm. This algorithm works by selecting the best
+    tree at each generation and applying different operators to it to create new trees.
+    """
 
     def __init__(self,
                  pop_size=100,
@@ -27,7 +31,14 @@ class DFFP(Model):
                  target_error=0.0,
                  verbose=True
                  ):
+        """
+        Initializes the DFFP algorithm.
 
+        Args:
+            alpha (float): Alpha controlling argument value.
+            beta (float): Beta controlling argument value.
+            gamma (float): Gamma controlling argument value.
+        """
         super(DFFP, self).__init__(
             pop_size=pop_size,
             max_evaluations=max_evaluations,
@@ -48,6 +59,16 @@ class DFFP(Model):
         self.gamma = gamma
 
     def fit(self, X, y):
+        """
+        Trains the model on the given data.
+
+        Args:
+            X (numpy array): The input data.
+            y (numpy array): The target values.
+
+        Returns:
+            None
+        """
         self.X = X
         self.y = y
         if self.max_time:
@@ -63,10 +84,22 @@ class DFFP(Model):
             print(f'Evaluations: {self.current_evaluation}')
 
     def simplify_programs(self):
+        """
+        Simplifies all programs in the population.
+        """
         for program in self.population:
             Methods.simplify(program)
 
     def attract(self, i, j):
+        """Attract two trees based on their fitness.
+    
+        Args:
+            i (int): Index of the first tree.
+            j (int): Index of the second tree.
+            
+        Returns:
+            temp: The attracted tree.
+        """
         distance = np.abs(
             self.population[i].fitness - self.population[j].fitness)
 
@@ -88,6 +121,12 @@ class DFFP(Model):
         return temp
 
     def run(self):
+        """
+        Runs the Difference-based Firefly Programming (DFFP) algorithm until termination conditions are met.
+
+        Returns:
+            None
+        """
         while not self.must_terminate():
             self.rank(is_reversed=False)
             for i in range(self.pop_size):
