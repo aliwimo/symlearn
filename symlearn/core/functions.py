@@ -1,4 +1,5 @@
-"""Functions used in evaluation process.
+"""
+Functions used in evaluation process.
 
 The :mod:`functions` module contains a set of different functions that is 
 used for in building programs.
@@ -10,30 +11,42 @@ from symlearn.core.node import Node
 from symlearn.core.parameters import Parameters
 
 class Add(Node):
-    """Addtion function.
+    """
+    Node representing the addition operation in a mathematical expression tree.
 
     Attributes:
-        arity (int): The number of arguments or operands
-        type (string): Type indicator of the function
+        arity (int): An integer indicating the number of children the node has.
+        type (string): A string indicating the type of the node.
     """
     def __init__(self):
-        """initializing method."""
+        """
+        Initializes the Add node.
+
+        Calls the __init__ method of the superclass to initialize the node, and
+        then sets the arity and type attributes.
+        """
         super(Add, self).__init__()
         self.arity = 2
         self.type = 'expression'
 
     def __repr__(self):
-        """representing method."""
+        """
+        Returns a string representation of the Add node.
+
+        Returns:
+            A string, '+'.
+        """
         return '+'
 
     def output(self, X):
-        """Output method.
+        """
+        Returns the sum of the output of the left and right children of the node.
         
         Args:
-            X (list | float | int): input variable
+            X (list | float | int): The input to the mathematical expression tree.
 
         Returns:
-            The value of the function after applying it to the inputs
+            The sum of the output of the left and right children of the node.
         """
         X0 = self.left.output(X)
         X1 = self.right.output(X)
