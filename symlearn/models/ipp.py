@@ -8,6 +8,10 @@ from symlearn.models.model import Model
 
 
 class IPP(Model):
+    """
+    A class for that represents Immune Plasma Programming (IPP) algorithm. This algorithm works by selecting the best
+    tree at each generation and applying different operators to it to create new trees.
+    """
 
     def __init__(self,
                  pop_size=100,
@@ -26,7 +30,13 @@ class IPP(Model):
                  target_error=0.0,
                  verbose=True
                  ):
+        """
+        Initializes the IPP algorithm.
 
+        Args:
+            donors_number: The number of donors.
+            receivers_number: The number of receivers.
+        """
         super(IPP, self).__init__(
             pop_size=pop_size,
             max_evaluations=max_evaluations,
@@ -46,6 +56,16 @@ class IPP(Model):
         self.receivers_number = receivers_number
 
     def fit(self, X, y):
+        """
+        Trains the model on the given data.
+
+        Args:
+            X (numpy array): The input data.
+            y (numpy array): The target values.
+
+        Returns:
+            None
+        """
         self.X = X
         self.y = y
         if self.max_time:
@@ -61,14 +81,40 @@ class IPP(Model):
 
     # perform infection between two individuals
     def perform_infection(self, individual):
+        """
+        Perform infection between two individuals.
+
+        Args:
+            individual: An individual to infect.
+
+        Returns:
+            A modified version of `individual` with the infection.
+        """
         return Methods.change_node(individual, self.expressions + self.terminals)
 
     # performing plasma tranfer from donor to receiver indvidual
     def perform_plasma_transfer(self, receiver, donor):
+        """
+        Perform a plasma transfer from a donor individual to a receiver individual.
+
+        Args:
+            receiver: The individual receiving the plasma.
+            donor: The individual donating the plasma.
+
+        Returns:
+            A modified version of `receiver` with the transferred plasma.
+        """
         return Methods.share(donor, deepcopy(receiver))
 
     # get lists of indexes of doreceivers_numbers and recievers
     def get_donors_and_receivers_indexes(self):
+        """
+        Get lists of indexes of donors and receivers.
+
+        Returns:
+            A tuple containing two lists: the first is a list of indexes of donors,
+            and the second is a list of indexes of receivers.
+        """
         donors = []
         receivers = []
         sorted_indexes = np.argsort(self.fitnesses)
@@ -79,6 +125,12 @@ class IPP(Model):
         return donors, receivers
 
     def run(self):
+        """
+        Runs the Immune Plasma Programming (IPP) algorithm until termination conditions are met.
+
+        Returns:
+            None
+        """
         while not self.must_terminate():
             self.rank(is_reversed=False)
 
