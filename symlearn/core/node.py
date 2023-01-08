@@ -9,13 +9,20 @@ from copy import deepcopy
 
 
 class Node:
-    """Node class.
+    """
+    A base class representing a node in a tree structure.
+
+    This class has a class attribute `__id` that is used to generate a unique
+    integer id for each node when it is initialized. The `__init__` method sets
+    the node's id, arity, fitness, and parent attributes, and initializes the
+    left and right children to None. The `update_fitness` method updates the
+    node's fitness attribute using the error function passed as an argument.
 
     Attributes:
         __id (int): Global id identifier.
         fitness (float): Current node tree's fitness value.
-        parent (Node): Current node's parent (if found).
-        arity (int): Arity or the number of arguments or operands.
+        parent (Node): A reference to the parent node of the node (if found).
+        arity (int): The number of children that the node has.
         left (Node): Node's left child.
         right (Node): Node's right child.
         id (int): Current node's id identifier.
@@ -25,7 +32,11 @@ class Node:
     __id = 0
 
     def __init__(self):
-        """initializing method."""
+        """Initializes the Node.
+
+        Sets the id, arity, fitness, and parent attributes, and initializes the
+        left and right children to None.
+        """
         self.fitness = np.inf
         self.parent = None
         self.arity = 0
@@ -35,54 +46,58 @@ class Node:
         Node.__id += 1
 
     def update_fitness(self, error_function, X, y):
-        """Updating fitness method.
+        """Updates the fitness of the node.
 
         Args:
-            error_function (function): Function used for calculating fitness.
+            error_function: A function that takes in the output of the node's
+                mathematical expression tree and the target output and returns a
+                scalar error value.
+            X: The input to the mathematical expression tree.
+            y: The target output.
         """
         self.fitness = error_function(self.output(X), y)
 
     def add_left_node(self, node):
-        """Adds node as a left child of the current node.
+        """Adds node as the left child of the current node.
 
         Args:
-            node (Node): Child node.
+            node: The node to be added as the left child.
         """
         node.parent = self
         self.left = node
 
     def add_right_node(self, node):
-        """Adds node as a right child of the current node.
+        """Adds node as the right child of the current node.
 
         Args:
-            node (Node): Child node.
+            node: The node to be added as the right child.
         """
         node.parent = self
         self.right = node
 
     def remove_left_node(self, node):
-        """Removes left child node.
+        """Removes the left child of the current node.
 
         Args:
-            node (Node): Child node.
+            node: The node to be removed as the left child.
         """
         node.parent = None
         self.left = None
 
     def remove_right_node(self, node):
-        """Removes right child node.
+        """Removes the right child of the current node.
 
         Args:
-            node (Node): Child node.
+            node: The node to be removed as the right child.
         """
         node.parent = None
         self.right = None
 
     def equation(self):
-        """Prints current node's tree as an equation.
+        """Represents current node's tree as an equation.
 
         Returns:
-            Current node's tree equation.
+            A string representation of the mathematical expression represented by the tree rooted at the current node.
         """
         equation = "("
         if self.left:
@@ -94,10 +109,10 @@ class Node:
         return equation
 
     def sub_nodes(self):
-        """Finds all subnodes in current node's tree.
+        """Finds all subnodes in the tree rooted at the current node.
 
         Returns:
-            List of subnode in current node's tree.
+            A list of all subnodes in the tree rooted at the current node.
         """
         nodes = []
         nodes.append(self)
@@ -111,7 +126,7 @@ class Node:
         """Creates a subtree instance from current node's tree.
 
         Returns:
-            Subtree instance.
+            A deep copy of the tree rooted at the current node.
         """
         subtree = deepcopy(self)
         subtree.update_id()
@@ -122,7 +137,7 @@ class Node:
         return subtree
 
     def update_id(self):
-        """Updates current node's id"""
+        """Updates the id attribute of the current node to a new unique integer."""
         self.id = Node.__id
         Node.__id += 1
 
@@ -130,7 +145,7 @@ class Node:
         """Caclulates the depth of current node's tree.
 
         Returns:
-            Depth value of current node's tree.
+            An integer representing the depth of the tree rooted at the current node.
         """
         depth_left = 0
         depth_right = 0
