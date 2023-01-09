@@ -35,14 +35,14 @@ class Methods:
         methods. 
 
         Args:
-            pop_size (int): The size of the generated population
-            initial_min_depth (int): Minimum trees forming height
-            initial_max_depth (int): Maximum trees forming height
+            pop_size (int): The size of the population to generate.
+            initial_min_depth (int): The minimum depth of the trees to generate.
+            initial_max_depth (int): The maximum depth of the trees to generate.
             expressions (list): Set of different expression used in tree
             terminals (list): Set of different terminals used in tree
 
         Returns:
-            Array of trees that represent the population
+            A list of trees that represent the population
         """
         population = []
         # generate with full method
