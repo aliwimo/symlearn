@@ -29,31 +29,11 @@ from symlearn.models import FFP, DFFP, IPP
 # supress numpy warnings
 np.seterr(all='ignore')
 
-# import dataset
-df = pd.read_csv('datasets/btc-usd.csv')
-
-# convert date column to date format
-df['Date'] = pd.to_datetime(df['Date'])
-
-# split dataset into training and test subsets
-train_mask = (df['Date'] >= '2022-1-2') & (df['Date'] <= '2022-8-31')
-train_df = df.loc[train_mask]
-test_mask = (df['Date'] >= '2022-9-1') & (df['Date'] <= '2022-10-31')
-test_df = df.loc[test_mask]
-
-# split each of training and test subsets into inputs (X) and outputs (Y)
-X_train = train_df[['Open', 'High', 'Low']]
-y_train = train_df['Close']
-date_train = train_df['Date']
-X_test = test_df[['Open', 'High', 'Low']]
-y_test = test_df['Close']
-date_test = test_df['Date']
-
-# convert dataframes to numpy objects
-X_train = X_train.to_numpy()
-y_train = y_train.to_numpy()
-X_test = X_test.to_numpy()
-y_test = y_test.to_numpy()
+# create random data
+X_train = np.random.uniform(0, 10, (75, 3))
+y_train = np.random.uniform(0, 10, 75)
+X_test = np.random.uniform(0, 10, (25, 3))
+y_test = np.random.uniform(0, 10, 25)
 
 # set global parameters
 Parameters.CONSTANTS = [-5, 5]
@@ -77,7 +57,7 @@ model = FFP(pop_size=50,
         initial_max_depth=6,
         min_depth=1,
         max_depth=15,
-        error_function=r2_score_inverse,
+        error_function=sum_of_difference,
         expressions=expressions,
         terminals=terminals,
         target_error=0,
@@ -90,8 +70,8 @@ y_fit = model.predict(X_train)
 y_pred = model.predict(X_test)
 
 # print results of the model
-train_score = r2_score(y_train, y_fit)
-test_score = r2_score(y_test, y_pred)
+train_score = sum_of_difference(y_train, y_fit)
+test_score = sum_of_difference(y_test, y_pred)
 print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
 
 print("\nDFFP")
@@ -104,7 +84,7 @@ model = DFFP(pop_size=50,
         initial_max_depth=6,
         min_depth=1,
         max_depth=15,
-        error_function=r2_score_inverse,
+        error_function=sum_of_difference,
         expressions=expressions,
         terminals=terminals,
         target_error=0,
@@ -117,10 +97,9 @@ y_fit = model.predict(X_train)
 y_pred = model.predict(X_test)
 
 # print results of the model
-print('Training set r2 score: {}\nTest set r2 score: {}'.format(
-    r2_score(y_train, y_fit),
-    r2_score(y_test, y_pred)
-))
+train_score = sum_of_difference(y_train, y_fit)
+test_score = sum_of_difference(y_test, y_pred)
+print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
 
 print("\nIPP")
 model = IPP(pop_size=100,
@@ -131,7 +110,7 @@ model = IPP(pop_size=100,
             initial_max_depth=6,
             min_depth=1,
             max_depth=15,
-            error_function=r2_score_inverse,
+            error_function=sum_of_difference,
             expressions=expressions,
             terminals=terminals,
             target_error=0,
@@ -144,26 +123,29 @@ y_fit = model.predict(X_train)
 y_pred = model.predict(X_test)
 
 # print results of the model
-print('Training set r2 score: {}\nTest set r2 score: {}'.format(
-    r2_score(y_train, y_fit),
-    r2_score(y_test, y_pred)
-))
+train_score = sum_of_difference(y_train, y_fit)
+test_score = sum_of_difference(y_test, y_pred)
+print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
 
 # # plot model graph
+# x_axis = range(100)
 # plt.clf()
 # ax = plt.axes()
 # ax.grid(linestyle=':', linewidth=0.5, alpha=1, zorder=1)
 # plt.ylabel("BTC Price ($)")
 # line = [None, None, None, None]
-# line[0], = ax.plot(date_train, y_train, linestyle=':',
+# line[0], = ax.plot(x_axis[:75], y_train, linestyle=':',
 #                    color='black', linewidth=0.7, zorder=2, label='Targeted')
-# line[1], = ax.plot(date_train, y_fit, linestyle='-',
+# line[1], = ax.plot(x_axis[:75], y_fit, linestyle='-',
 #                    color='red', linewidth=0.7, zorder=3, label='Trained')
-# line[2], = ax.plot(date_test, y_test, linestyle=':',
+# line[2], = ax.plot(x_axis[75:], y_test, linestyle=':',
 #                    color='black', linewidth=0.7, zorder=2)
-# line[3], = ax.plot(date_test, y_pred, linestyle='-',
+# line[3], = ax.plot(x_axis[75:], y_pred, linestyle='-',
 #                    color='blue', linewidth=0.7, zorder=3, label='Predicted')
-# plt.axvline(x=date_test.iloc[0], linestyle='-', color='black', linewidth='1')
+# plt.axvline(x=x_axis[0], linestyle='-', color='black', linewidth='1')
+# fig = plt.gcf()
+# fig.set_size_inches(13.66, 6.66)
+# fig.savefig("temp/figure.png", dpi=100)
 # plt.draw()
 # plt.legend()
 # plt.show()
