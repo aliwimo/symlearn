@@ -1,0 +1,3 @@
+sphinx
+sphinx-press-theme
+sphinx-copybutton
