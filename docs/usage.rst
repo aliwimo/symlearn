@@ -3,7 +3,7 @@ How to use?
 
 After installing ``symlearn`` pacakge, you can use it by importing the essential modules and classes. The following example shows how to use ``symlearn`` package in your projects.
 
-In this example, we used FPP is used in modeling and forecasting the system of Box-Jenkins gas furnace time series. It starts with importing dataset and splitting it into training and test subsets:
+In this example, we used :class:`FFP` is used in modeling and forecasting the system of Box-Jenkins gas furnace time series. It starts with importing dataset and splitting it into training and test subsets:
 
 .. code-block:: python
 
@@ -39,7 +39,7 @@ After Importing the essential core modules, ``Parameters`` must be declared befo
     expressions = [Add, Sub, Mul, Div, Pow]
     terminals = [Variable, Constant]
 
-A suitable model must be chosen, and its arguments must be satisfied. Here in this example, we used ``FFP`` model with the arguments shown in the following code block:
+A suitable model must be chosen, and its arguments must be satisfied. Here in this example, we used :class:`FFP` model with the arguments shown in the following code block:
 
 .. code-block:: python
 
@@ -90,7 +90,25 @@ Plotting the optimized model
     plt.legend()
     plt.show()
 
-..  figure:: images/graph.png
+..  figure:: images/graph.jpg
     :width: 100%
 
     Targeted and Predicted models' graphs
+
+
+Exporting the graph of the best model:
+
+.. code-block:: python
+
+    model.export_graph()
+
+Output:
+
+.. code-block:: console
+
+    ((x2)-(((((x0)+(x1))-(-1.74))-(x1))+((((-1.12)*(1.06))-((x1)+(-3.78)))-(1.41))))
+
+..  figure:: images/exported_graph.jpg
+    :width: 600px
+
+    Best models' tree representation
