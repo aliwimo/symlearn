@@ -34,8 +34,8 @@ class IPP(Model):
         Initializes the IPP algorithm.
 
         Args:
-            donors_number: The number of donors.
-            receivers_number: The number of receivers.
+            donors_number (int): The number of donors.
+            receivers_number (int): The number of receivers.
         """
         super(IPP, self).__init__(
             pop_size=pop_size,
