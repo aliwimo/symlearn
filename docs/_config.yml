@@ -1,6 +1,7 @@
 title: Symlearn
 description: Symlearn, python machine learning package 
-theme: just-the-docs
+# theme: just-the-docs
+remote_theme: pmarsceill/just-the-docs
 baseurl: "/symlearn"
 url: https://aliwimo.github.io
 
