@@ -64,7 +64,7 @@ class Model:
         self.population = None
         self.fitnesses = None
 
-    def generate_population(self):
+    def _generate_population(self):
         """
         Generates the initial population of trees.
 
@@ -78,7 +78,7 @@ class Model:
             expressions=self.expressions,
             terminals=self.terminals)
 
-    def get_initial_statistics(self):
+    def _get_initial_statistics(self):
         """
         Calculates the fitness of the trees in the initial population, and sets the model to the tree with the lowest fitness.
 
@@ -100,7 +100,7 @@ class Model:
         self.model.update_fitness(
             self.error_function, self.X, self.y)
 
-    def rank(self, is_reversed=False):
+    def _rank(self, is_reversed=False):
         """
         Ranks the trees in the population according to their fitness.
 
@@ -113,7 +113,7 @@ class Model:
         self.population, self.fitnesses = Methods.rank_trees(
             self.population, self.fitnesses, is_reversed)
 
-    def evalualte(self, current, temp):
+    def _evaluate(self, current, temp):
         """
         Evaluates the fitness of the given tree, and updates the model if the tree has a lower fitness than the current model.
 
@@ -159,7 +159,7 @@ class Model:
         """
         return self.model.output(X)
 
-    def must_terminate(self):
+    def _must_terminate(self):
         """
         Determines whether the model fitting process should terminate based on the specified termination criteria.
 
