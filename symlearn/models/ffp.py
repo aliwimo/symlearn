@@ -60,15 +60,15 @@ class FFP(Model):
         if self.max_time:
             self.start_time = datetime.now()
             self.end_time = self.start_time + timedelta(seconds=self.max_time)
-        self.generate_population()
-        self.get_initial_statistics()
-        self.run()
+        self._generate_population()
+        self._get_initial_statistics()
+        self._run()
         if self.verbose:
             if self.max_time:
                 print(f'Total time: {datetime.now() - self.start_time}')
             print(f'Evaluations: {self.current_evaluation}')
 
-    def attract(self, i, j):
+    def _attract(self, i, j):
         """
         Applies the "share" operator to the trees at indices `i` and `j` in the population.
 
@@ -81,23 +81,23 @@ class FFP(Model):
         """
         return Methods.share(self.population[j], deepcopy(self.population[i]))
 
-    def run(self):
+    def _run(self):
         """
         Runs the Firefly Programming (FFP) algorithm until termination conditions are met.
 
         Returns:
             None
         """
-        while not self.must_terminate():
-            self.rank(is_reversed=False)
+        while not self._must_terminate():
+            self._rank(is_reversed=False)
             for i in range(self.pop_size):
-                if self.must_terminate():
+                if self._must_terminate():
                     break
                 for j in range(self.pop_size):
-                    if self.must_terminate():
+                    if self._must_terminate():
                         break
                     if self.population[i].fitness >= self.population[j].fitness:
-                        temp = self.attract(i, j)
+                        temp = self._attract(i, j)
                         if temp.depth() > self.max_depth or temp.depth() < self.min_depth:
                             if random() > 0.5:
                                 temp = Methods.generate_individual(
@@ -105,14 +105,14 @@ class FFP(Model):
                             else:
                                 temp = Methods.generate_individual(
                                     'grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
-                        self.evalualte(i, temp)
+                        self._evaluate(i, temp)
                         self.current_evaluation += 1
 
-                    if self.must_terminate():
+                    if self._must_terminate():
                         break
-                if self.must_terminate():
+                if self._must_terminate():
                     break
-            if self.must_terminate():
+            if self._must_terminate():
                 break
             # increase generation counter
             if not self.max_generations == -1:

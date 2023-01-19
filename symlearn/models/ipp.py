@@ -71,16 +71,16 @@ class IPP(Model):
         if self.max_time:
             self.start_time = datetime.now()
             self.end_time = self.start_time + timedelta(seconds=self.max_time)
-        self.generate_population()
-        self.get_initial_statistics()
-        self.run()
+        self._generate_population()
+        self._get_initial_statistics()
+        self._run()
         if self.verbose:
             if self.max_time:
                 print(f'Total time: {datetime.now() - self.start_time}')
             print(f'Evaluations: {self.current_evaluation}')
 
     # perform infection between two individuals
-    def perform_infection(self, individual):
+    def _perform_infection(self, individual):
         """
         Perform infection between two individuals.
 
@@ -93,7 +93,7 @@ class IPP(Model):
         return Methods.change_node(individual, self.expressions + self.terminals)
 
     # performing plasma tranfer from donor to receiver indvidual
-    def perform_plasma_transfer(self, receiver, donor):
+    def _perform_plasma_transfer(self, receiver, donor):
         """
         Perform a plasma transfer from a donor individual to a receiver individual.
 
@@ -107,7 +107,7 @@ class IPP(Model):
         return Methods.share(donor, deepcopy(receiver))
 
     # get lists of indexes of doreceivers_numbers and recievers
-    def get_donors_and_receivers_indexes(self):
+    def _get_donors_and_receivers_indexes(self):
         """
         Get lists of indexes of donors and receivers.
 
@@ -124,15 +124,15 @@ class IPP(Model):
             receivers.append(sorted_indexes[-1 - i])
         return donors, receivers
 
-    def run(self):
+    def _run(self):
         """
         Runs the Immune Plasma Programming (IPP) algorithm until termination conditions are met.
 
         Returns:
             None
         """
-        while not self.must_terminate():
-            self.rank(is_reversed=False)
+        while not self._must_terminate():
+            self._rank(is_reversed=False)
 
             # start of infection phase
             for index in range(self.pop_size):
@@ -141,7 +141,7 @@ class IPP(Model):
                 while random_index == index:
                     random_index = np.random.randint(0, self.pop_size)
                 current_individual = deepcopy(self.population[index])
-                infected_individual = self.perform_infection(
+                infected_individual = self._perform_infection(
                     current_individual)
                 if infected_individual.depth() > self.max_depth or infected_individual.depth() < self.min_depth:
                     if random() > 0.5:
@@ -150,17 +150,17 @@ class IPP(Model):
                     else:
                         infected_individual = Methods.generate_individual(
                             'grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
-                self.evalualte(index, infected_individual)
-                if self.must_terminate():
+                self._evaluate(index, infected_individual)
+                if self._must_terminate():
                     break
 
-            # start of plasma transfering phase
+            # start of plasma transferring phase
             # generating dose_control and treatment_control vectors
             dose_control = np.ones(self.receivers_number, int)
             treatment_control = np.ones(self.receivers_number, int)
 
             # get indexes of both of donors and receivers
-            donors_indexes, receivers_indexes = self.get_donors_and_receivers_indexes()
+            donors_indexes, receivers_indexes = self._get_donors_and_receivers_indexes()
 
             for index in range(self.receivers_number):
                 receiver_index = receivers_indexes[index]
@@ -169,10 +169,10 @@ class IPP(Model):
                 current_receiver = self.population[receiver_index]
                 random_donor = self.population[random_donor_index]
                 while treatment_control[index] == 1:
-                    if self.must_terminate():
+                    if self._must_terminate():
                         break
                     self.current_evaluation += 1
-                    treated_individual = self.perform_plasma_transfer(
+                    treated_individual = self._perform_plasma_transfer(
                         current_receiver, random_donor)
                     treated_individual.update_fitness(
                         self.error_function, self.X, self.y)
@@ -198,18 +198,18 @@ class IPP(Model):
                     if self.population[receiver_index].fitness < self.model.fitness:
                         self.model = deepcopy(
                             self.population[receiver_index])
-                if self.must_terminate():
+                if self._must_terminate():
                     break
 
             # start of donors updating phase
             for index in range(self.donors_number):
-                if self.must_terminate():
+                if self._must_terminate():
                     break
                 self.current_evaluation += 1
                 donor_index = donors_indexes[index]
                 if (self.current_evaluation / self.max_evaluations) > random():
                     # the same of update donor here!
-                    temp = self.perform_infection(self.population[donor_index])
+                    temp = self._perform_infection(self.population[donor_index])
                 else:
                     if random() > 0.5:
                         temp = Methods.generate_individual(
@@ -223,7 +223,7 @@ class IPP(Model):
                 if self.population[donor_index].fitness < self.model.fitness:
                     self.model = deepcopy(
                         self.population[donor_index])
-                if self.must_terminate():
+                if self._must_terminate():
                     break
 
             if not self.max_generations == -1:
