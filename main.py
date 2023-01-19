@@ -1,24 +1,9 @@
 """Main module that is used to test package"""
 
-# pylint: disable=unused-import
 # import dependencies
 import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
 
-# import sklearn metrics and utilities
-from sklearn.metrics import r2_score
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
-
-# import sklearn models
-from sklearn.neural_network import MLPRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.svm import SVR
-from sklearn import tree
-
-# import core dependicies
+# import core dependencies
 from symlearn.core.parameters import Parameters
 from symlearn.core.functions import *
 from symlearn.core.errors import *
@@ -26,7 +11,7 @@ from symlearn.core.errors import *
 # import models
 from symlearn.models import FFP, DFFP, IPP
 
-# supress numpy warnings
+# suppress numpy warnings
 np.seterr(all='ignore')
 
 # create random data
@@ -41,14 +26,6 @@ Parameters.FEATURES = X_train.shape[1]
 Parameters.CONSTANTS_TYPE = 'range'
 expressions = [Add, Sub, Mul]
 terminals = [Variable, Constant]
-
-
-# choose a model to train
-# model = MLPRegressor(max_iter=5000, hidden_layer_sizes=(4, 4, 4, ))
-# model = tree.DecisionTreeRegressor()
-# model = LinearRegression()
-# model = KNeighborsRegressor(n_neighbors=2)
-# model = make_pipeline(StandardScaler(), SVR(C=100.0, coef0=1.0, kernel='poly', max_iter=5000))
 
 print("FFP")
 model = FFP(pop_size=50,
@@ -126,26 +103,3 @@ y_pred = model.predict(X_test)
 train_score = sum_of_difference(y_train, y_fit)
 test_score = sum_of_difference(y_test, y_pred)
 print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
-
-# # plot model graph
-# x_axis = range(100)
-# plt.clf()
-# ax = plt.axes()
-# ax.grid(linestyle=':', linewidth=0.5, alpha=1, zorder=1)
-# plt.ylabel("BTC Price ($)")
-# line = [None, None, None, None]
-# line[0], = ax.plot(x_axis[:75], y_train, linestyle=':',
-#                    color='black', linewidth=0.7, zorder=2, label='Targeted')
-# line[1], = ax.plot(x_axis[:75], y_fit, linestyle='-',
-#                    color='red', linewidth=0.7, zorder=3, label='Trained')
-# line[2], = ax.plot(x_axis[75:], y_test, linestyle=':',
-#                    color='black', linewidth=0.7, zorder=2)
-# line[3], = ax.plot(x_axis[75:], y_pred, linestyle='-',
-#                    color='blue', linewidth=0.7, zorder=3, label='Predicted')
-# plt.axvline(x=x_axis[0], linestyle='-', color='black', linewidth='1')
-# fig = plt.gcf()
-# fig.set_size_inches(13.66, 6.66)
-# fig.savefig("temp/figure.png", dpi=100)
-# plt.draw()
-# plt.legend()
-# plt.show()
