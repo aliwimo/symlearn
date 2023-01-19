@@ -3,6 +3,7 @@ from copy import deepcopy
 from random import random
 from datetime import datetime, timedelta
 from symlearn.core.methods import Methods
+from symlearn.core.operators import share, simplify, substitute
 from symlearn.core.functions import *
 from symlearn.models.model import Model
 
@@ -88,7 +89,7 @@ class DFFP(Model):
         Simplifies all programs in the population.
         """
         for program in self.population:
-            Methods.simplify(program)
+            simplify(program)
 
     def _attract(self, i, j):
         """Attract two trees based on their fitness.
@@ -105,18 +106,18 @@ class DFFP(Model):
 
         if distance > self.gamma:
             for _ in range(2):
-                temp = Methods.share(
+                temp = share(
                     self.population[j], deepcopy(self.population[i]))
-            temp = Methods.change_node(temp, self.expressions + self.terminals)
+            temp = substitute(temp, self.expressions + self.terminals)
         elif self.gamma >= distance > self.beta:
-            temp = Methods.share(
+            temp = share(
                 self.population[j], deepcopy(self.population[i]))
-            temp = Methods.change_node(temp, self.expressions + self.terminals)
+            temp = substitute(temp, self.expressions + self.terminals)
         elif self.beta >= distance > self.alpha:
-            temp = Methods.change_node(
+            temp = substitute(
                 deepcopy(self.population[i]), self.expressions + self.terminals)
         else:
-            temp = Methods.share(
+            temp = share(
                 self.population[j], deepcopy(self.population[i]))
         return temp
 
@@ -137,7 +138,7 @@ class DFFP(Model):
                         break
                     if self.population[i].fitness >= self.population[j].fitness:
                         temp = self._attract(i, j)
-                        Methods.simplify(temp)
+                        simplify(temp)
                         if temp.depth() > self.max_depth or temp.depth() < self.min_depth:
                             if random() > 0.5:
                                 temp = Methods.generate_individual(
