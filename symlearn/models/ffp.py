@@ -3,6 +3,7 @@ from copy import deepcopy
 from random import random
 from datetime import datetime, timedelta
 from symlearn.core.methods import Methods
+from symlearn.core.operators import share
 from symlearn.core.functions import *
 from symlearn.models.model import Model
 
@@ -79,7 +80,7 @@ class FFP(Model):
         Returns:
             Tree: The resulting tree after the "share" operator has been applied.
         """
-        return Methods.share(self.population[j], deepcopy(self.population[i]))
+        return share(self.population[j], deepcopy(self.population[i]))
 
     def _run(self):
         """

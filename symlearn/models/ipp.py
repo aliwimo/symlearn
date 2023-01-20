@@ -3,6 +3,7 @@ from copy import deepcopy
 from random import random
 from datetime import datetime, timedelta
 from symlearn.core.methods import Methods
+from symlearn.core.operators import share, substitute
 from symlearn.core.functions import *
 from symlearn.models.model import Model
 
@@ -90,7 +91,7 @@ class IPP(Model):
         Returns:
             A modified version of `individual` with the infection.
         """
-        return Methods.change_node(individual, self.expressions + self.terminals)
+        return substitute(individual, self.expressions + self.terminals)
 
     # performing plasma tranfer from donor to receiver indvidual
     def _perform_plasma_transfer(self, receiver, donor):
@@ -104,9 +105,9 @@ class IPP(Model):
         Returns:
             A modified version of `receiver` with the transferred plasma.
         """
-        return Methods.share(donor, deepcopy(receiver))
+        return share(donor, deepcopy(receiver))
 
-    # get lists of indexes of doreceivers_numbers and recievers
+    # get lists of indexes of donors and receivers
     def _get_donors_and_receivers_indexes(self):
         """
         Get lists of indexes of donors and receivers.
