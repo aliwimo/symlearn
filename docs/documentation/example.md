@@ -7,7 +7,7 @@ nav_order: 3
 
 # [](#header-1)How to use?
 
-After installing ``symlearn`` package, you can use it by importing the essential modules and classes. The following example shows how to use ``symlearn`` package in your projects.
+After installing ``symlearn`` package, you can use it by importing the essential modules and classes. The following example shows how to use ``symlearn`` package in your projects. Example codes and data files can be found in [Package Repository](https://github.com/aliwimo/symlearn).
 
 In this example, we used `FFP` is used in modeling and forecasting the system of Box-Jenkins gas furnace time series. It starts with importing dataset and splitting it into training and test subsets:
 
@@ -70,6 +70,8 @@ Fitting model using `fit()` method.
 
 ```python
 model.fit(X_train, y_train)
+y_fit = model.predict(X_train)
+y_pred = model.predict(X_test)
 ```
 <div class="code-example" markdown="1">
 ```cmd
@@ -108,7 +110,7 @@ plt.show()
 Exporting the graph of the best model:
 
 ```python
-model.export_graph()
+model.export_best()
 ```
 <div class="code-example" markdown="1">
 ```cmd
