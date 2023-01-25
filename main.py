@@ -105,7 +105,7 @@ test_score = sum_of_difference(y_test, y_pred)
 print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
 
 
-print("GP")
+print("\nGP")
 model = GP(pop_size=50,
         max_evaluations=2500,
         initial_min_depth=0,
