@@ -27,6 +27,8 @@ class GP(Model):
                  expressions=[Add, Sub, Mul],
                  terminals=[Variable, Constant],
                  target_error=0.0,
+                 n_elite=2,
+                 p_crossover=0.9,
                  verbose=True
                  ):
         """Initializes the GP algorithm."""
@@ -44,6 +46,8 @@ class GP(Model):
             terminals=terminals,
             target_error=target_error,
             verbose=verbose)
+        self.n_elite = n_elite
+        self.p_crossover = p_crossover
 
     def fit(self, X, y):
         """
@@ -69,18 +73,26 @@ class GP(Model):
                 print(f'Total time: {datetime.now() - self.start_time}')
             print(f'Evaluations: {self.current_evaluation}')
 
-    def _attract(self, i, j):
-        """
-        Applies the "share" operator to the trees at indices `i` and `j` in the population.
+    
+    # roulette wheel selection
+    def perform_selection(self):
+        return self.rand_selection()
 
-        Args:
-            i (int): The index of the first tree.
-            j (int): The index of the second tree.
+    # def wheel_selection(self):
+    #     total_fit = sum(self.fitnesses)
+    #     prop = [(i / total_fit) for i in fitnesses]
+    #     chosen = np.random.choice(chromosome_number, p=prop, size=2) # 
+    #     return population[chosen[0]], population[chosen[1]]
+    
+    def rand_selection(self):
+        index1 = random.randint(0, self.pop_size)
+        index2 = random.randint(0, self.pop_size)
+        return self.population[index1], self.population[index2]
 
-        Returns:
-            Tree: The resulting tree after the "share" operator has been applied.
-        """
-        return share(self.population[j], deepcopy(self.population[i]))
+    def perform_crossover(self, i, j):
+        child1 = share(deepcopy(self.population[j]), deepcopy(self.population[i]))
+        child2 = share(deepcopy(self.population[i]), deepcopy(self.population[j]))
+        return child1, child2
 
     def _run(self):
         """
@@ -90,7 +102,28 @@ class GP(Model):
             None
         """
         while not self._must_terminate():
+            next_generation = [0] * self.pop_size
+    
+            # we have to resort population according to their fitnesses
             self._rank(is_reversed=False)
+
+            # copy elites to the new generation
+            for i in range(self.n_elite): 
+                next_generation[i] = self.population[i].copy()
+
+            # perform crossover
+            for i in range(self.n_elite, self.pop_size, 2):
+                parent1, parent2 = self.perform_selection()
+                if random() < self.p_crossover:
+                    child1, child2 = self.perform_crossover(parent1, parent2)
+                    next_generation[i] = child1.copy()
+                    next_generation[i + 1] = child2.copy()
+                else:
+                    next_generation[i] = parent1.copy()
+                    next_generation[i + 1] = parent2.copy()
+            
+            next_fitnesses = calculate_fitnesses(next_generation)
+
             for i in range(self.pop_size):
                 if self._must_terminate():
                     break
