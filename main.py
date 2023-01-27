@@ -27,29 +27,29 @@ Parameters.CONSTANTS_TYPE = 'range'
 expressions = [Add, Sub, Mul]
 terminals = [Variable, Constant]
 
-# print("FFP")
-# model = FFP(pop_size=50,
-#         max_evaluations=2500,
-#         initial_min_depth=0,
-#         initial_max_depth=6,
-#         min_depth=1,
-#         max_depth=15,
-#         error_function=sum_of_difference,
-#         expressions=expressions,
-#         terminals=terminals,
-#         target_error=0,
-#         verbose=False
-#         )
+print("FFP")
+model = FFP(pop_size=50,
+        max_evaluations=10000,
+        initial_min_depth=0,
+        initial_max_depth=6,
+        min_depth=1,
+        max_depth=15,
+        error_function=sum_of_difference,
+        expressions=expressions,
+        terminals=terminals,
+        target_error=0,
+        verbose=True
+        )
 
-# # fit data into model
-# model.fit(X_train, y_train)
-# y_fit = model.predict(X_train)
-# y_pred = model.predict(X_test)
+# fit data into model
+model.fit(X_train, y_train)
+y_fit = model.predict(X_train)
+y_pred = model.predict(X_test)
 
-# # print results of the model
-# train_score = sum_of_difference(y_train, y_fit)
-# test_score = sum_of_difference(y_test, y_pred)
-# print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
+# print results of the model
+train_score = sum_of_difference(y_train, y_fit)
+test_score = sum_of_difference(y_test, y_pred)
+print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
 
 # print("\nDFFP")
 # model = DFFP(pop_size=50,
@@ -78,31 +78,31 @@ terminals = [Variable, Constant]
 # test_score = sum_of_difference(y_test, y_pred)
 # print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
 
-print("\nIPP")
-model = IPP(pop_size=100,
-            donors_number=3,
-            receivers_number=3,
-            max_evaluations=2500,
-            initial_min_depth=0,
-            initial_max_depth=6,
-            min_depth=1,
-            max_depth=15,
-            error_function=sum_of_difference,
-            expressions=expressions,
-            terminals=terminals,
-            target_error=0,
-            verbose=False
-            )
+# print("\nIPP")
+# model = IPP(pop_size=100,
+#             donors_number=3,
+#             receivers_number=3,
+#             max_evaluations=10000,
+#             initial_min_depth=0,
+#             initial_max_depth=6,
+#             min_depth=1,
+#             max_depth=15,
+#             error_function=sum_of_difference,
+#             expressions=expressions,
+#             terminals=terminals,
+#             target_error=0,
+#             verbose=True
+#             )
 
-# fit data into model
-model.fit(X_train, y_train)
-y_fit = model.predict(X_train)
-y_pred = model.predict(X_test)
+# # fit data into model
+# model.fit(X_train, y_train)
+# y_fit = model.predict(X_train)
+# y_pred = model.predict(X_test)
 
-# print results of the model
-train_score = sum_of_difference(y_train, y_fit)
-test_score = sum_of_difference(y_test, y_pred)
-print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
+# # print results of the model
+# train_score = sum_of_difference(y_train, y_fit)
+# test_score = sum_of_difference(y_test, y_pred)
+# print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
 
 
 # print("\nGP")
