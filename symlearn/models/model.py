@@ -80,33 +80,27 @@ class Model:
 
     def _get_initial_statistics(self):
         """
-        Calculates the fitness of the trees in the initial population, and sets the model to the tree with the lowest fitness.
+        Calculates the fitness of the trees in the initial population, 
+        and sets the model to the tree with the lowest fitness.
 
         Returns:
             None
         """
-        self.fitnesses = [0] * self.pop_size
-        min_error = 10e6
-        min_index = -1
-        for index in range(self.pop_size):
-            self.population[index].update_fitness(
-                self.error_function, self.X, self.y)
-            self.fitnesses[index] = self.population[index].fitness
-            if self.population[index].fitness <= min_error:
-                min_index = index
-        self.model = deepcopy(self.population[min_index])
-        self.model.update_fitness(
-            self.error_function, self.X, self.y)
+        self._update_errors(self.population)
+        self.fitnesses = self._calculate_errors()
+        self.model = self._find_best_model()
 
+    def _update_errors(self, population):
+        for tree in population: tree.update_fitness(self.error_function, self.X, self.y)
 
-    def _calculate_fitnesses(self):
-        fitnesses = [0] * self.pop_size
-        for i in range(self.pop_size):
-            fitnesses[i] = self.population[i].fitness
-        return fitnesses
+    def _calculate_errors(self):
+        return [tree.fitness for tree in self.population]
 
+    def _find_best_model(self):
+        min_error = min(self.fitnesses)
+        min_error_index = self.fitnesses.index(min_error)
+        return deepcopy(self.population[min_error_index])
             
-
     def _rank(self, is_reversed=False):
         """
         Ranks the trees in the population according to their fitness.
