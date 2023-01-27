@@ -97,8 +97,15 @@ class Model:
         self.model = deepcopy(self.population[min_index])
         self.model.update_fitness(
             self.error_function, self.X, self.y)
-        self.model.update_fitness(
-            self.error_function, self.X, self.y)
+
+
+    def _calculate_fitnesses(self):
+        fitnesses = [0] * self.pop_size
+        for i in range(self.pop_size):
+            fitnesses[i] = self.population[i].fitness
+        return fitnesses
+
+            
 
     def _rank(self, is_reversed=False):
         """
