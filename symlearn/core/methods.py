@@ -108,28 +108,21 @@ class Methods:
         return node
 
     @classmethod
-    def rank_trees(cls, trees, fitnesses, is_reversed=False):
-        """Ranks trees according to fitness rank.
-
-        This method ranks trees after sorting the fitness values.
+    def rank_trees(cls, trees, errors, reverse=False):
+        """Ranks the trees based on the errors.
 
         Args:
-            trees (list): List of trees' heads (nodes)
-            fitnesses (list): List of fitness values of trees
-            is_reversed (bool): Reversed sorting modifier
+            trees (List[Node]): list of trees to be ranked
+            errors (List[float]): list of corresponding errors for the given trees
+            reverse (bool, optional): Flag indicating whether the ranking should be in descending order or not. Default is False.
 
         Returns:
-            Trees: List of sorted trees' heads (nodes)
-            fitnesses: List of sorted fitness values
+            List of ranked trees, and corresponding errors.
         """
-        sorted_indices = np.argsort(fitnesses)
-        if not is_reversed:
-            sorted_indices = np.flip(sorted_indices)
-        fitnesses.sort(reverse=not is_reversed)
-        temp_trees = trees.copy()
-        for (m, n) in zip(range(len(trees)), sorted_indices):
-            trees[m] = temp_trees[n]
-        return trees, fitnesses
+        combined = list(zip(errors, trees))
+        combined.sort(key=lambda x: x[0], reverse=reverse)
+        errors, trees = zip(*combined)
+        return list(trees), list(errors) 
 
     @classmethod
     def export_graph(cls, root: Node, file_name, label):
