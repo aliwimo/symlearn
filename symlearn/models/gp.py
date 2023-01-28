@@ -101,7 +101,7 @@ class GP(Model):
         Returns:
             None
         """
-        while not self._must_terminate():
+        while not self._should_terminate():
             next_generation = [0] * self.pop_size
     
             # we have to resort population according to their fitnesses
@@ -125,10 +125,10 @@ class GP(Model):
             next_fitnesses = calculate_fitnesses(next_generation)
 
             for i in range(self.pop_size):
-                if self._must_terminate():
+                if self._should_terminate():
                     break
                 for j in range(self.pop_size):
-                    if self._must_terminate():
+                    if self._should_terminate():
                         break
                     if self.population[i].fitness >= self.population[j].fitness:
                         temp = self._attract(i, j)
@@ -142,11 +142,11 @@ class GP(Model):
                         self._evaluate(i, temp)
                         self.current_evaluation += 1
 
-                    if self._must_terminate():
+                    if self._should_terminate():
                         break
-                if self._must_terminate():
+                if self._should_terminate():
                     break
-            if self._must_terminate():
+            if self._should_terminate():
                 break
             # increase generation counter
             if not self.max_generations == -1:

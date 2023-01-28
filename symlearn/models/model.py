@@ -2,7 +2,7 @@ import numpy as np
 from datetime import datetime
 from symlearn.core.methods import Methods
 from symlearn.core.functions import *
-from sklearn.metrics import r2_score
+from symlearn.core.metrics import r2_score
 from copy import deepcopy
 
 
@@ -160,23 +160,22 @@ class Model:
         """
         return self.model.output(X)
 
-    def _must_terminate(self):
+    def _should_terminate(self):
         """
         Determines whether the model fitting process should terminate based on the specified termination criteria.
 
         Returns:
             bool: A flag indicating whether the model fitting process should terminate.
         """
-        terminate = False
         if self.max_time and datetime.now() > self.end_time:
-            terminate = True
-        elif self.max_evaluations > -1 and self.current_evaluation > self.max_evaluations:
-            terminate = True
-        elif self.max_generations > -1 and self.current_generation > self.max_generations:
-            terminate = True
-        elif self.model.fitness < self.target_error:
-            terminate = True
-        return terminate
+            return True
+        if self.max_evaluations > -1 and self.current_evaluation > self.max_evaluations:
+            return True
+        if self.max_generations > -1 and self.current_generation > self.max_generations:
+            return True
+        if self.model.fitness < self.target_error:
+            return True
+        return False
 
     def export_best(self, export_path='images/', filename='Best'):
         """
