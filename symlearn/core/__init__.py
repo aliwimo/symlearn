@@ -5,7 +5,4 @@ from symlearn.core.metrics import mean_squared_error
 from symlearn.core.metrics import root_mean_squared_error
 from symlearn.core.metrics import r2_score
 from symlearn.core.metrics import r2_score_inverse
-
-
-from symlearn.models.dffp import DFFP
-from symlearn.models.ipp import IPP
+from symlearn.core.metrics import max_residual_error

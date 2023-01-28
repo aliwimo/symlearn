@@ -35,104 +35,94 @@ Parameters.CONSTANTS_TYPE = 'range'
 expressions = [Add, Sub, Mul, Div, Sin, Cos]
 terminals = [Variable, Constant]
 
-print("FFP")
-model = FFP(pop_size=10,
-        max_evaluations=10000,
-        initial_min_depth=0,
-        initial_max_depth=6,
-        min_depth=1,
-        max_depth=15,
-        error_function=r2_score_inverse,
-        expressions=expressions,
-        terminals=terminals,
-        target_error=0,
-        verbose=True
-        )
+population_size = 50
+max_evaluations = 5000
+initial_min_depth = 0
+initial_max_depth = 6
+min_depth = 1
+max_depth = 15
+error_function = max_residual_error
+target_error = 0
+verbose = False
 
-# fit data into model
-model.fit(X_train, y_train)
-y_fit = model.predict(X_train)
-y_pred = model.predict(X_test)
+# initialize models
+ffp_model = FFP(
+            pop_size=population_size,
+            max_evaluations=max_evaluations,
+            initial_min_depth=initial_min_depth,
+            initial_max_depth=initial_max_depth,
+            min_depth=min_depth,
+            max_depth=max_depth,
+            error_function=error_function,
+            expressions=expressions,
+            terminals=terminals,
+            target_error=target_error,
+            verbose=verbose
+            )
 
-# print results of the model
-train_score = r2_score(y_train, y_fit)
-test_score = r2_score(y_test, y_pred)
-print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
+dffp_model = DFFP(
+            pop_size=population_size,
+            alpha=0.01,
+            beta=0.05,
+            gamma=0.1,
+            max_evaluations=max_evaluations,
+            initial_min_depth=initial_min_depth,
+            initial_max_depth=initial_max_depth,
+            min_depth=min_depth,
+            max_depth=max_depth,
+            error_function=error_function,
+            expressions=expressions,
+            terminals=terminals,
+            target_error=target_error,
+            verbose=verbose
+            )
 
-# print("\nDFFP")
-# model = DFFP(pop_size=50,
-#         alpha=0.01,
-#         beta=0.05,
-#         gamma=0.1,
-#         max_evaluations=5000,
-#         initial_min_depth=0,
-#         initial_max_depth=6,
-#         min_depth=1,
-#         max_depth=15,
-#         error_function=sum_of_difference,
-#         expressions=expressions,
-#         terminals=terminals,
-#         target_error=0,
-#         verbose=False
-#         )
+ipp_model = IPP(
+            pop_size=population_size,
+            donors_number=3,
+            receivers_number=3,
+            max_evaluations=max_evaluations,
+            initial_min_depth=initial_min_depth,
+            initial_max_depth=initial_max_depth,
+            min_depth=min_depth,
+            max_depth=max_depth,
+            error_function=error_function,
+            expressions=expressions,
+            terminals=terminals,
+            target_error=target_error,
+            verbose=verbose
+            )
 
-# # fit data into model
-# model.fit(X_train, y_train)
-# y_fit = model.predict(X_train)
-# y_pred = model.predict(X_test)
-
-# # print results of the model
-# train_score = sum_of_difference(y_train, y_fit)
-# test_score = sum_of_difference(y_test, y_pred)
-# print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
-
-# print("\nIPP")
-# model = IPP(pop_size=100,
-#             donors_number=3,
-#             receivers_number=3,
-#             max_evaluations=10000,
-#             initial_min_depth=0,
-#             initial_max_depth=6,
-#             min_depth=1,
-#             max_depth=15,
-#             error_function=sum_of_difference,
-#             expressions=expressions,
-#             terminals=terminals,
-#             target_error=0,
-#             verbose=True
-#             )
-
-# # fit data into model
-# model.fit(X_train, y_train)
-# y_fit = model.predict(X_train)
-# y_pred = model.predict(X_test)
-
-# # print results of the model
-# train_score = sum_of_difference(y_train, y_fit)
-# test_score = sum_of_difference(y_test, y_pred)
-# print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
+gp_model = GP(
+            pop_size=population_size,
+            max_evaluations=max_evaluations,
+            initial_min_depth=initial_min_depth,
+            initial_max_depth=initial_max_depth,
+            min_depth=min_depth,
+            max_depth=max_depth,
+            error_function=error_function,
+            expressions=expressions,
+            terminals=terminals,
+            target_error=target_error,
+            verbose=verbose
+            )
 
 
-# print("\nGP")
-# model = GP(pop_size=50,
-#         max_evaluations=2500,
-#         initial_min_depth=0,
-#         initial_max_depth=6,
-#         min_depth=1,
-#         max_depth=15,
-#         error_function=sum_of_difference,
-#         expressions=expressions,
-#         terminals=terminals,
-#         target_error=0,
-#         verbose=True
-#         )
+# models = [ffp_model, dffp_model, ipp_model, gp_model]
+models = [ffp_model, dffp_model, ipp_model]
+# models = [ffp_model]
 
-# # fit data into model
-# model.fit(X_train, y_train)
-# y_fit = model.predict(X_train)
-# y_pred = model.predict(X_test)
+for model in models:
+    print('-' * 50)
+    # print name of the model
+    print(model.__class__.__name__)
 
-# # print results of the model
-# train_score = sum_of_difference(y_train, y_fit)
-# test_score = sum_of_difference(y_test, y_pred)
-# print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
+    # fit data into model
+    model.fit(X_train, y_train)
+    y_fit = model.predict(X_train)
+    y_pred = model.predict(X_test)
+
+    # print results of the model
+    train_score = error_function(y_train, y_fit)
+    test_score = error_function(y_test, y_pred)
+    print(f'\nTraining set `{error_function.__name__}` score: {train_score}\nTest set `{error_function.__name__}` score: {test_score}')
