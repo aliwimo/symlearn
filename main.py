@@ -2,11 +2,12 @@
 
 # import dependencies
 import numpy as np
+import pandas as pd
 
 # import core dependencies
 from symlearn.core.parameters import Parameters
 from symlearn.core.functions import *
-from symlearn.core.errors import *
+from symlearn.core.metrics import *
 
 # import models
 from symlearn.models import FFP, DFFP, IPP, GP
@@ -14,27 +15,34 @@ from symlearn.models import FFP, DFFP, IPP, GP
 # suppress numpy warnings
 np.seterr(all='ignore')
 
-# create random data
-X_train = np.random.uniform(0, 10, (75, 3))
-y_train = np.random.uniform(0, 10, 75)
-X_test = np.random.uniform(0, 10, (25, 3))
-y_test = np.random.uniform(0, 10, 25)
+# import dataset
+data = pd.read_csv('example/data.csv').to_numpy()
+X = data[:, [0, 1]]
+y = data[:, 2]
+t = np.arange(0, 290)
+# split each of training and test subsets into inputs (X) and outputs (Y)
+X_train = X[0:201, :]
+X_test = X[200:, :]
+y_train = y[0:201]
+y_test = y[200:]
+t_train = t[:201]
+t_test = t[200:]
 
 # set global parameters
 Parameters.CONSTANTS = [-5, 5]
 Parameters.FEATURES = X_train.shape[1]
 Parameters.CONSTANTS_TYPE = 'range'
-expressions = [Add, Sub, Mul]
+expressions = [Add, Sub, Mul, Div, Sin, Cos]
 terminals = [Variable, Constant]
 
 print("FFP")
-model = FFP(pop_size=50,
+model = FFP(pop_size=10,
         max_evaluations=10000,
         initial_min_depth=0,
         initial_max_depth=6,
         min_depth=1,
         max_depth=15,
-        error_function=sum_of_difference,
+        error_function=r2_score_inverse,
         expressions=expressions,
         terminals=terminals,
         target_error=0,
@@ -47,8 +55,8 @@ y_fit = model.predict(X_train)
 y_pred = model.predict(X_test)
 
 # print results of the model
-train_score = sum_of_difference(y_train, y_fit)
-test_score = sum_of_difference(y_test, y_pred)
+train_score = r2_score(y_train, y_fit)
+test_score = r2_score(y_test, y_pred)
 print(f'Training set r2 score: {train_score}\nTest set r2 score: {test_score}')
 
 # print("\nDFFP")

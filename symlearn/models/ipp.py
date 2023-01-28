@@ -132,7 +132,7 @@ class IPP(Model):
         Returns:
             None
         """
-        while not self._must_terminate():
+        while not self._should_terminate():
             self._rank(is_reversed=False)
 
             # start of infection phase
@@ -152,7 +152,7 @@ class IPP(Model):
                         infected_individual = Methods.generate_individual(
                             'grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
                 self._evaluate(index, infected_individual)
-                if self._must_terminate():
+                if self._should_terminate():
                     break
 
             # start of plasma transferring phase
@@ -170,7 +170,7 @@ class IPP(Model):
                 current_receiver = self.population[receiver_index]
                 random_donor = self.population[random_donor_index]
                 while treatment_control[index] == 1:
-                    if self._must_terminate():
+                    if self._should_terminate():
                         break
                     self.current_evaluation += 1
                     treated_individual = self._perform_plasma_transfer(
@@ -199,12 +199,12 @@ class IPP(Model):
                     if self.population[receiver_index].fitness < self.model.fitness:
                         self.model = deepcopy(
                             self.population[receiver_index])
-                if self._must_terminate():
+                if self._should_terminate():
                     break
 
             # start of donors updating phase
             for index in range(self.donors_number):
-                if self._must_terminate():
+                if self._should_terminate():
                     break
                 self.current_evaluation += 1
                 donor_index = donors_indexes[index]
@@ -224,7 +224,7 @@ class IPP(Model):
                 if self.population[donor_index].fitness < self.model.fitness:
                     self.model = deepcopy(
                         self.population[donor_index])
-                if self._must_terminate():
+                if self._should_terminate():
                     break
 
             if not self.max_generations == -1:

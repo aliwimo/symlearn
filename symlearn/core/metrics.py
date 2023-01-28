@@ -1,12 +1,9 @@
 """Error metrics used in evaluation process.
 
 The :mod:`errors` module contains a set of different error metrics
-that is used for evaluating programmes during optimzation process.
+that is used for evaluating programmes during optimization process.
 """
 import numpy as np
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_absolute_error
-from sklearn.metrics import r2_score
 
 
 def sum_of_difference(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
@@ -22,7 +19,7 @@ def sum_of_difference(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     return np.sum(np.abs(y_pred - y_true))
 
 
-def mean_squared_error_c(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+def mean_squared_error(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     """Mean square error metric
 
     Args:
@@ -32,7 +29,9 @@ def mean_squared_error_c(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     Returns:
         The value of the metric
     """
-    return mean_squared_error(y_true, y_pred)
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    return np.mean((y_true - y_pred)**2)
 
 
 def root_mean_squared_error(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
@@ -45,10 +44,10 @@ def root_mean_squared_error(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarra
     Returns:
         The value of the metric
     """
-    return mean_squared_error(y_true, y_pred, squared=False)
+    return np.sqrt(mean_squared_error(y_true, y_pred))
 
 
-def mean_absolute_error_c(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+def mean_absolute_error(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     """Mean absolute error metric
 
     Args:
@@ -58,11 +57,13 @@ def mean_absolute_error_c(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     Returns:
         The value of the metric
     """
-    return mean_absolute_error(y_true, y_pred)
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    return np.mean(np.abs(y_true - y_pred))
 
 
-def r2_score_inverse(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
-    """Inverse of r2 Score metric
+def r2_score(y_pred, y_true):
+    """R2 Score metric
 
     Args:
         y_pred (np.ndarray): Predicted output values array
@@ -71,4 +72,21 @@ def r2_score_inverse(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
     Returns:
         The value of the metric
     """
-    return 1 - r2_score(y_true, y_pred)
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    ss_res = np.sum((y_true - y_pred)**2)
+    ss_tot = np.sum((y_true - np.mean(y_true))**2)
+    return 1 - (ss_res / ss_tot)
+
+
+def r2_score_inverse(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+    """Inverse of R2 Score metric
+
+    Args:
+        y_pred (np.ndarray): Predicted output values array
+        y_true (np.ndarray): Real output values array
+
+    Returns:
+        The value of the metric
+    """
+    return 1 - r2_score(y_pred, y_true)
