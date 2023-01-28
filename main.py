@@ -35,13 +35,13 @@ Parameters.CONSTANTS_TYPE = 'range'
 expressions = [Add, Sub, Mul, Div, Sin, Cos]
 terminals = [Variable, Constant]
 
-population_size = 50
-max_evaluations = 5000
+population_size = 10
+max_evaluations = 1000
 initial_min_depth = 0
 initial_max_depth = 6
 min_depth = 1
 max_depth = 15
-error_function = max_residual_error
+error_function = root_mean_squared_error
 target_error = 0
 verbose = False
 
@@ -108,9 +108,9 @@ gp_model = GP(
             )
 
 
-# models = [ffp_model, dffp_model, ipp_model, gp_model]
-models = [ffp_model, dffp_model, ipp_model]
+models = [ffp_model, dffp_model, ipp_model, gp_model]
 # models = [ffp_model]
+# models = [gp_model]
 
 for model in models:
     print('-' * 50)
@@ -125,4 +125,4 @@ for model in models:
     # print results of the model
     train_score = error_function(y_train, y_fit)
     test_score = error_function(y_test, y_pred)
-    print(f'\nTraining set `{error_function.__name__}` score: {train_score}\nTest set `{error_function.__name__}` score: {test_score}')
+    print(f'Training set `{error_function.__name__}` score: {train_score}\nTest set `{error_function.__name__}` score: {test_score}')

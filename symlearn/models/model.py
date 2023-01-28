@@ -1,5 +1,6 @@
 import numpy as np
 from datetime import datetime
+from random import random
 from symlearn.core.methods import Methods
 from symlearn.core.functions import *
 from symlearn.core.metrics import r2_score
@@ -86,20 +87,23 @@ class Model:
         Returns:
             None
         """
-        self._update_errors(self.population)
+        self._update_errors()
         self.fitnesses = self._calculate_errors()
         self.model = self._find_best_model()
 
-    def _update_errors(self, population):
+    def _update_errors(self, population=None):
+        if not population: population = self.population
         for tree in population: tree.update_fitness(self.error_function, self.X, self.y)
 
-    def _calculate_errors(self):
-        return [tree.fitness for tree in self.population]
+    def _calculate_errors(self, population=None):
+        if not population: population = self.population
+        return [tree.fitness for tree in population]
 
-    def _find_best_model(self):
-        min_error = min(self.fitnesses)
-        min_error_index = self.fitnesses.index(min_error)
-        return deepcopy(self.population[min_error_index])
+    def _find_best_model(self, population=None, errors=None):
+        if not population: population = self.population
+        if not errors: errors = self.fitnesses
+        min_error_index = errors.index(min(errors))
+        return deepcopy(population[min_error_index])
             
     def _rank(self, is_reversed=False):
         """
@@ -129,11 +133,16 @@ class Model:
         if temp.fitness < self.population[current].fitness:
             self.population[current] = deepcopy(temp)
             self.fitnesses[current] = self.population[current].fitness
-            if self.population[current].fitness < self.model.fitness:
-                self.model = deepcopy(self.population[current])
-                if self.verbose:
-                    print(
-                        f'Evaluations: {self.current_evaluation} | Fitness: {self.model.fitness}')
+            self._compare_model(temp)
+    
+    def _compare_model(self, tree):
+        if tree.fitness < self.model.fitness:
+            self.model = deepcopy(tree)
+            self.print_info()
+
+    def print_info(self):
+        if self.verbose:
+            print(f'Evaluations: {self.current_evaluation} | Fitness: {self.model.fitness}')
 
     def score(self, y_test, y_pred):
         """
@@ -169,9 +178,9 @@ class Model:
         """
         if self.max_time and datetime.now() > self.end_time:
             return True
-        if self.max_evaluations > -1 and self.current_evaluation > self.max_evaluations:
+        if self.max_evaluations > -1 and self.current_evaluation >= self.max_evaluations:
             return True
-        if self.max_generations > -1 and self.current_generation > self.max_generations:
+        if self.max_generations > -1 and self.current_generation >= self.max_generations:
             return True
         if self.model.fitness < self.target_error:
             return True
@@ -207,3 +216,8 @@ class Model:
         zero_array = np.zeros(X.shape)
         x = np.vstack([zero_array, X])
         return self.model.output(x)[-1]
+
+    def _generate_random_tree(self):
+        method = 'full' if random() > 0.5 else 'grow'
+        return Methods.generate_individual(method, self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
+        

@@ -1,6 +1,6 @@
 import numpy as np
 from copy import deepcopy
-from random import random
+from random import random, randint
 from datetime import datetime, timedelta
 from symlearn.core.methods import Methods
 from symlearn.core.operators import share
@@ -85,13 +85,17 @@ class GP(Model):
     #     return population[chosen[0]], population[chosen[1]]
     
     def rand_selection(self):
-        index1 = random.randint(0, self.pop_size)
-        index2 = random.randint(0, self.pop_size)
+        index1 = randint(0, self.pop_size - 1)
+        index2 = randint(0, self.pop_size - 1)
         return self.population[index1], self.population[index2]
 
-    def perform_crossover(self, i, j):
-        child1 = share(deepcopy(self.population[j]), deepcopy(self.population[i]))
-        child2 = share(deepcopy(self.population[i]), deepcopy(self.population[j]))
+    def perform_crossover(self, parent1, parent2):
+        child1 = share(deepcopy(parent2), deepcopy(parent1))
+        child2 = share(deepcopy(parent1), deepcopy(parent2))
+        if child1.depth() > self.max_depth or child1.depth() < self.min_depth:
+            child1 = self._generate_random_tree()
+        if child2.depth() > self.max_depth or child2.depth() < self.min_depth:
+            child2 = self._generate_random_tree()
         return child1, child2
 
     def _run(self):
@@ -109,45 +113,35 @@ class GP(Model):
 
             # copy elites to the new generation
             for i in range(self.n_elite): 
-                next_generation[i] = self.population[i].copy()
+                next_generation[i] = deepcopy(self.population[i])
 
             # perform crossover
             for i in range(self.n_elite, self.pop_size, 2):
                 parent1, parent2 = self.perform_selection()
                 if random() < self.p_crossover:
                     child1, child2 = self.perform_crossover(parent1, parent2)
-                    next_generation[i] = child1.copy()
-                    next_generation[i + 1] = child2.copy()
+                    next_generation[i] = deepcopy(child1)
+                    next_generation[i + 1] = deepcopy(child2)
                 else:
-                    next_generation[i] = parent1.copy()
-                    next_generation[i + 1] = parent2.copy()
+                    next_generation[i] = deepcopy(parent1)
+                    next_generation[i + 1] = deepcopy(parent2)
             
-            next_fitnesses = calculate_fitnesses(next_generation)
+            # update and calculate the fitnesses of the next generation and find the best
+            self._update_errors(next_generation)
+            next_fitnesses = self._calculate_errors(next_generation)
+            next_generation_best = self._find_best_model(next_generation, next_fitnesses)
+
 
             for i in range(self.pop_size):
-                if self._should_terminate():
-                    break
-                for j in range(self.pop_size):
-                    if self._should_terminate():
-                        break
-                    if self.population[i].fitness >= self.population[j].fitness:
-                        temp = self._attract(i, j)
-                        if temp.depth() > self.max_depth or temp.depth() < self.min_depth:
-                            if random() > 0.5:
-                                temp = Methods.generate_individual(
-                                    'full', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
-                            else:
-                                temp = Methods.generate_individual(
-                                    'grow', self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
-                        self._evaluate(i, temp)
-                        self.current_evaluation += 1
+                if next_fitnesses[i] > self.fitnesses[i]:
+                    self.population[i] = deepcopy(next_generation[i])
+                    self.fitnesses[i] = next_fitnesses[i]
 
-                    if self._should_terminate():
-                        break
-                if self._should_terminate():
-                    break
-            if self._should_terminate():
-                break
+            # increase evaluation counter
+            self.current_evaluation += self.pop_size
+
+            self._compare_model(next_generation_best)
+            
             # increase generation counter
             if not self.max_generations == -1:
                 self.current_generation += 1
