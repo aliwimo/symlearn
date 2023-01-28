@@ -90,3 +90,18 @@ def r2_score_inverse(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
         The value of the metric
     """
     return 1 - r2_score(y_pred, y_true)
+    
+
+def max_residual_error(y_true, y_pred):
+    """Maximum residual error metric
+
+    Args:
+        y_pred (np.ndarray): Predicted output values array
+        y_true (np.ndarray): Real output values array
+
+    Returns:
+        The value of the metric
+    """
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+    return np.max(np.abs(y_true - y_pred))
