@@ -6,8 +6,8 @@ that is used for evaluating programmes during optimization process.
 import numpy as np
 
 
-def sum_of_difference(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
-    """Sum of difference error metric
+def sum_absolute_error(y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+    """Sum of absolute error metric
 
     Args:
         y_pred (np.ndarray): Predicted output values array
