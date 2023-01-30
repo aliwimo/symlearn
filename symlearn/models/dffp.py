@@ -114,11 +114,9 @@ class DFFP(Model):
                 self.population[j], deepcopy(self.population[i]))
             temp = substitute(temp, self.expressions + self.terminals)
         elif self.beta >= distance > self.alpha:
-            temp = substitute(
-                deepcopy(self.population[i]), self.expressions + self.terminals)
+            temp = substitute(deepcopy(self.population[i]), self.expressions + self.terminals)
         else:
-            temp = share(
-                self.population[j], deepcopy(self.population[i]))
+            temp = share(self.population[j], deepcopy(self.population[i]))
         return temp
 
     def _run(self):
