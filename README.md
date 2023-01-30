@@ -5,6 +5,14 @@
 [![PyPI - License](https://img.shields.io/pypi/l/symlearn?color=green)](https://en.wikipedia.org/wiki/MIT_License)
 [![PyPI - Status](https://img.shields.io/pypi/status/symlearn)](https://pypi.org/project/symlearn/)
 
-[Symlearn] is a python package that provides an API interface of different population-based optimization algorithms including Firefly Algorithm, Immune Plasma Algorithm, and others. ``symlearn`` uses the principles of symbolic regression to solve different regression problems that does not need any pre-specified model. 
+[Symlearn] is a versatile python package that offers a user-friendly API for various population-based optimization algorithms such as Genetic Algorithm, Firefly Algorithm, Immune Plasma Algorithm, and more. Utilizing the concepts of symbolic regression, ``symlearn`` is capable of tackling a wide range of regression problems without the requirement of a pre-determined model. This flexibility allows the package to be applied in a multitude of domains and scenarios, making it a valuable tool for anyone looking to solve complex optimization problems
 
-[Symlearn]: https://pypi.org/project/symlearn
+*Install the latest version:* 
+```
+pip install symlearn
+```
+
+For further information about ``symlearn`` and installation, checkout package's [Documentation].
+
+[Symlearn]: https://aliwimo.github.io/symlearn
+[Documentation]: ./documentation
