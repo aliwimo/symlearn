@@ -221,3 +221,7 @@ class Model:
         method = 'full' if random() > 0.5 else 'grow'
         return Methods.generate_individual(method, self.initial_min_depth, self.initial_max_depth, self.expressions, self.terminals)
         
+    def _check_depth(self, tree):
+        if tree.depth() > self.max_depth or tree.depth() < self.min_depth:
+            return self._generate_random_tree()
+        return tree
