@@ -36,14 +36,14 @@ expressions = [Add, Sub, Mul, Div, Sin, Cos]
 terminals = [Variable, Constant]
 
 population_size = 10
-max_evaluations = 1000
+max_evaluations = 2500
 initial_min_depth = 0
 initial_max_depth = 6
 min_depth = 1
 max_depth = 15
-error_function = root_mean_squared_error
+error_function = r2_score_inverse
 target_error = 0
-verbose = False
+verbose = True
 
 # initialize models
 ffp_model = FFP(
@@ -108,9 +108,9 @@ gp_model = GP(
             )
 
 
-models = [ffp_model, dffp_model, ipp_model, gp_model]
+# models = [ffp_model, dffp_model, ipp_model, gp_model]
 # models = [ffp_model]
-# models = [gp_model]
+models = [gp_model]
 
 for model in models:
     print('-' * 50)
