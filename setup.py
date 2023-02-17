@@ -13,8 +13,7 @@ setup(
     author_email="aliwimo@gmail.com",
     license="MIT License",
     packages=find_packages(),
-    install_requires=["numpy", "pandas", "matplotlib",
-                      "scikit-learn", "graphviz==0.16"],
+    install_requires=["numpy", "graphviz==0.16"],
     url="https://github.com/aliwimo/symlearn",
     keywords=["python", "symbolic", "regression", "optimization"],
     classifiers=[
@@ -25,12 +24,7 @@ setup(
         "Operating System :: MacOS",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: Unix",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
-        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3",
         "Topic :: Software Development :: Libraries"
     ]
 )
