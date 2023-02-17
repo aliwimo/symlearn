@@ -9,7 +9,7 @@ tags:
   - math
 ---
 
-# [](#header-1)Metrics
+# [](#header-1)Metrics 
 {: .no_toc }
 
 Since `symlearn` uses optimization algorithms, it needs metrics to act as an objective (error) function to optimize models. Therefore, it is necessary to define metric functions. `symlearn` package provides most popular regression metrics listed below:
@@ -194,6 +194,10 @@ print(f'Testing Set Score: {test_score}')
 ```
 
 ## [](#header-2) Maximum Residual Error (MAX ERROR)
+{: .d-inline-block }
+New (V 0.1.1)
+{: .label .label-purple }
+
 The maximum residual error metric in regression is a measure of the largest difference between the predicted value of the model and the actual value of the dependent variable. It is often used as a measure of the worst-case error of a model. Mathematically, it can be represented as:
 
 $$ MAX\;ERROR = max(|y_{i} - {\hat{y}}_{i}|) \quad , \quad \forall i \in n $$
