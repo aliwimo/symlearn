@@ -15,4 +15,4 @@ pip install symlearn
 For further information about ``symlearn`` and installation, checkout package's [Documentation].
 
 [Symlearn]: https://aliwimo.github.io/symlearn
-[Documentation]: ./documentation
+[Documentation]: https://aliwimo.github.io/symlearn/documentation
